@@ -61,6 +61,44 @@ router.get("/dashboard",validateAdmin,async(req,res)=>{
     res.render("admin_dashboard", { prodcount, categcount });
 })
 router.get("/products",validateAdmin,async(req,res)=>{
+  const result = await productModel.aggregate([
+  {
+    $sort: { _id: 1 }
+  },
+  {
+    $group: {
+      _id: "$category",
+      products: { $push: "$$ROOT" }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      k: "$_id",
+      v: { $slice: ["$products", 10] }
+    }
+  },
+  {
+    $group: {
+      _id: null,
+      asArray: {
+        $push: {
+          k: "$k",
+          v: "$v"
+        }
+      }
+    }
+  },
+  {
+    $project: {
+      _id: 0,
+      categories: { $arrayToObject: "$asArray" }
+    }
+  }
+]);
+
+
+  
   let productsRaw = await productModel.find();
   // Group products by category
   let products = {};
