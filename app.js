@@ -2,9 +2,12 @@ const express = require('express');
 const app = express();
 const indexRouter = require('./routes');
 const authRouter = require('./routes/auth');
+const adminRouter = require('./routes/admin');
 const expressSession = require('express-session'); // Correct variable
 const path = require('path');
 const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const productRouter = require('./routes/product');
 
 require('dotenv').config();
 require('./config/db');
@@ -19,17 +22,18 @@ app.use(
         resave: false,
         saveUninitialized: false,
         secret: process.env.SESSION_SECRET,
-        cookie: {
-            maxAge: 1000 * 60 * 60 * 24 * 30
-        }
+       
     })
 );
+app.use(cookieParser())
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
+app.use("/admin", adminRouter);
+app.use("/products", productRouter);
 
 app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');

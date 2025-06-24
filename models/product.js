@@ -15,20 +15,20 @@ const productSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    trim: true
+    minlength:3,
+    maxlength:50,
   },
   stock: {
-    type: Boolean,
+    type: Number,
     required: true
   },
   description: {
     type: String,
-    default: ''
+    
   },
   image: {
-    type: String,
-    
-  }
+    type: Buffer,
+  },
 }, {
   timestamps: true
 });
@@ -39,11 +39,11 @@ const Product = mongoose.model('Product', productSchema);
 // Joi Validation Function
 function validateProduct(data) {
   const schema = Joi.object({
-    name: Joi.string().min(2).max(100).required(),
-    price: Joi.string().required(), // If you plan to do calculations, change this to number
-    category: Joi.string().min(2).required(),
-    stock: Joi.boolean().optional(),
-    description: Joi.string().allow('').optional(),
+    name: Joi.string().min(3).max(100).required(),
+    price: Joi.number().min(0).required(), // If you plan to do calculations, change this to number
+    category: Joi.string().min(3).max(50).required(),
+    stock: Joi.number().required(),
+    description: Joi.string().optional(),
     image: Joi.string().optional(),
   });
 
