@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Cart Functionality Test</h1>
+    
+    <div class="test-section">
+        <h3>1. Test Cart Route</h3>
+        <button onclick="testCartRoute()">Test Cart Route</button>
+        <div id="cartRouteResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>2. Test Authentication</h3>
+        <button onclick="testAuth()">Check Authentication</button>
+        <div id="authResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>3. Test Cart Page</h3>
+        <a href="/cart" target="_blank">
+            <button>Open Cart Page</button>
+        </a>
+    </div>
+    
+    <div class="test-section">
+        <h3>4. Test Products</h3>
+        <a href="/" target="_blank">
+            <button>View Products</button>
+        </a>
+    </div>
+
+    <script>
+        async function testCartRoute() {
+            try {
+                const response = await fetch('/cart/test');
+                const data = await response.json();
+                document.getElementById('cartRouteResult').innerHTML = 
+                    '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('cartRouteResult').innerHTML = 
+                    '<p style="color: red;">Error: ' + error.message + '</p>';
+            }
+        }
+        
+        async function testAuth() {
+            try {
+                const response = await fetch('/cart/data');
+                if (response.redirected) {
+                    document.getElementById('authResult').innerHTML = 
+                        '<p style="color: orange;">Redirected to login - not authenticated</p>';
+                } else {
+                    const data = await response.json();
+                    document.getElementById('authResult').innerHTML = 
+                        '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                }
+            } catch (error) {
+                document.getElementById('authResult').innerHTML = 
+                    '<p style="color: red;">Error: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html> 

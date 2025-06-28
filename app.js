@@ -8,6 +8,9 @@ const path = require('path');
 const passport = require('passport');
 const cookieParser = require('cookie-parser');
 const productRouter = require('./routes/product');
+const categoriesRouter = require('./routes/category');
+const userRouter=require("./routes/user")
+const cartRouter=require("./routes/cart")
 
 require('dotenv').config();
 require('./config/db');
@@ -34,6 +37,10 @@ app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/admin", adminRouter);
 app.use("/products", productRouter);
+app.use("/categories",categoriesRouter);
+app.use("/users",userRouter);
+app.use("/cart",cartRouter);
+
 
 app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');

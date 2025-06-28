@@ -3,7 +3,7 @@ const router = express.Router();
 const { adminModel } = require('../models/admin');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const validateAdmin = require('../middlewares/admin');
+const { validateAdmin } = require('../middlewares/admin');
 const { productModel } = require('../models/product');
 const { categoryModel } = require('../models/category');
 
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === 'DEVELOPMENT') {
 
       await user.save();
 
-      const token = jwt.sign({ email: "harsh@gmail.com" }, process.env.JWT_KEY);
+      const token = jwt.sign({ email: "harsh@gmail.com",admin:true }, process.env.JWT_KEY);
 
       res.cookie("token", token, {
         httpOnly: true,
@@ -50,7 +50,7 @@ router.post("/login",async(req,res)=>{
 
    let valid=await bcrypt.compare(password,admin.password)
    if(valid){
-    let token=jwt.sign({email:"harsh@gmail.com"},process.env.JWT_KEY);
+    let token=jwt.sign({email:"harsh@gmail.com",admin:true},process.env.JWT_KEY);
     res.cookie("token",token)
     res.redirect("/admin/dashboard")
    }

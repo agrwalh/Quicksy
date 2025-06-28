@@ -16,7 +16,7 @@ router.get('/', async function (req, res) {
         });
         let somethingInCart = false;
         let cartCount = 0;
-        if (req.user) {
+        if (req.isAuthenticated() && req.user) {
             const cart = await cartModel.findOne({ user: req.user._id });
             if (cart && cart.products.length > 0) {
                 somethingInCart = true;
@@ -25,6 +25,7 @@ router.get('/', async function (req, res) {
         }
         res.render("index", { rnproducts, products, somethingInCart, cartCount });
     } catch (err) {
+        console.error('Index route error:', err);
         res.status(500).send('Error fetching products');
     }
 });

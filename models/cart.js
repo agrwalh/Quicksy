@@ -10,9 +10,16 @@ const cartSchema = new mongoose.Schema({
   },
   products: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'product',
-      required: true
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
+      },
+      quantity: {
+        type: Number,
+        default: 1,
+        min: 1
+      }
     }
   ],
   totalPrice: {
@@ -40,6 +47,6 @@ function validateCart(data) {
 
 // Exports
 module.exports = {
-  cartModel:mongoose.model('cart', cartSchema),
+  cartModel: Cart,
   validateCart
 };
