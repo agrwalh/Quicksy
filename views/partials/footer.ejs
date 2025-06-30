@@ -1,1 +1,52 @@
+<footer class="bg-gray-100 text-gray-700 py-10 mt-10 border-t">
+    <div class="max-w-screen-xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
+        <div>
+            <div class="flex items-center space-x-2 mb-4">
+                <img src="/images/blinkit.jpg" alt="Blinkit Logo" class="h-8 w-8 rounded-full">
+                <span class="text-2xl font-bold text-green-700">blink<span class="text-yellow-400">it</span></span>
+            </div>
+            <div class="text-xs text-gray-500 mb-2">&copy; <%= new Date().getFullYear() %> Blinkit. All rights reserved.</div>
+            <div class="flex space-x-3 mt-4">
+                <a href="#" class="hover:text-green-700"><i class="ri-facebook-circle-fill text-2xl"></i></a>
+                <a href="#" class="hover:text-green-700"><i class="ri-instagram-line text-2xl"></i></a>
+                <a href="#" class="hover:text-green-700"><i class="ri-twitter-x-line text-2xl"></i></a>
+                <a href="#" class="hover:text-green-700"><i class="ri-linkedin-box-line text-2xl"></i></a>
+            </div>
+            <div class="mt-4">
+                <a href="#" class="inline-block mr-2"><img src="https://blinkit.com/images/appstore.png" alt="App Store" class="h-8"></a>
+                <a href="#" class="inline-block"><img src="https://blinkit.com/images/playstore.png" alt="Play Store" class="h-8"></a>
+            </div>
+        </div>
+        <div>
+            <div class="font-semibold mb-2">Useful Links</div>
+            <ul class="text-sm space-y-1">
+                <li><a href="#" class="hover:text-green-700">Blog</a></li>
+                <li><a href="#" class="hover:text-green-700">Privacy</a></li>
+                <li><a href="#" class="hover:text-green-700">Terms</a></li>
+                <li><a href="#" class="hover:text-green-700">FAQs</a></li>
+                <li><a href="#" class="hover:text-green-700">Security</a></li>
+                <li><a href="#" class="hover:text-green-700">Contact</a></li>
+            </ul>
+        </div>
+        <div>
+            <div class="font-semibold mb-2">Categories</div>
+            <ul class="text-sm space-y-1">
+                <% categories.forEach(function(cat) { %>
+                    <li><a href="/?category=<%= cat.name %>" class="hover:text-green-700"><%= cat.name %></a></li>
+                <% }) %>
+            </ul>
+        </div>
+        <div>
+            <div class="font-semibold mb-2">Partner</div>
+            <ul class="text-sm space-y-1">
+                <li><a href="#" class="hover:text-green-700">Partner</a></li>
+                <li><a href="#" class="hover:text-green-700">Franchise</a></li>
+                <li><a href="#" class="hover:text-green-700">Seller</a></li>
+                <li><a href="#" class="hover:text-green-700">Warehouse</a></li>
+                <li><a href="#" class="hover:text-green-700">Deliver</a></li>
+                <li><a href="#" class="hover:text-green-700">Resources</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
 </html>

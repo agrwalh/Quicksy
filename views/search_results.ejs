@@ -1,0 +1,27 @@
+<%- include('./partials/header', { cartCount: cartCount, categories: categories }) %>
+<div class="max-w-screen-lg mx-auto p-4">
+    <h2 class="text-2xl font-bold mb-4">Search Results for "<%= query %>"</h2>
+    <% if (rnproducts.length === 0) { %>
+        <div class="bg-white p-6 rounded shadow text-center text-gray-500">No products found.</div>
+    <% } else { %>
+        <% for(let key in products){ %>
+            <div class="bg-white p-4 rounded-lg shadow mb-10">
+                <h2 class="text-lg font-semibold text-green-700">
+                    <%= key %>
+                </h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+                    <% products[key].forEach(elem=>{ %>
+                        <div class="flex flex-col items-center bg-gray-50 rounded-lg shadow hover:shadow-lg transition p-2">
+                            <img src="data:image/jpg;base64, <%= elem.image.toString('base64') %>" alt="<%= elem.name %>" class="w-24 rounded">
+                            <p class="text-sm text-center mt-2 font-medium">
+                                <%= elem.name %>
+                            </p>
+                            <a class="px-4 text-white text-xs rounded mt-2 inline-block py-1 bg-green-700 hover:bg-green-800 transition" href="/cart/add/<%= elem._id %>">ADD</a>
+                        </div>
+                    <%}) %>
+                </div>
+            </div>
+        <% } %>
+    <% } %>
+</div>
+<%- include('./partials/footer') %> 

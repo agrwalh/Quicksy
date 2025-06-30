@@ -58,7 +58,7 @@ router.post("/login",async(req,res)=>{
 router.get("/dashboard",validateAdmin,async(req,res)=>{
     const prodcount = await productModel.countDocuments();
     const categcount = await categoryModel.countDocuments();
-    res.render("admin_dashboard", { prodcount, categcount });
+    res.render("admin_dashboard", { prodcount, categcount, user: req.user, categories: [], cartCount: 0 });
 })
 router.get("/products",validateAdmin,async(req,res)=>{
   const result = await productModel.aggregate([
@@ -108,7 +108,7 @@ router.get("/products",validateAdmin,async(req,res)=>{
     }
     products[product.category].push(product);
   });
-  res.render("admin_products", { products });
+  res.render("admin_products", { products, user: req.user, categories: [], cartCount: 0 });
 })
 
 router.get("/logout",validateAdmin,function(req,res){

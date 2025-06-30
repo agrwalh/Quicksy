@@ -1,4 +1,4 @@
-<%- include('./partials/header'); %>
+<%- include('./partials/header', { cartCount: cartCount, categories: categories }) %>
 
     <style>
         .swiper-container {
@@ -18,29 +18,64 @@
 
     <body class="bg-gray-100 font-sans">
         <div class="max-w-screen-lg mx-auto p-4">
+            <!-- Hero Banner -->
+            <div class="w-full max-w-screen-lg mx-auto mt-4 mb-6">
+                <img src="/images/paan-corner-banner.jpg" alt="Paan Corner Banner" class="rounded-xl w-full object-cover shadow-lg">
+            </div>
+            <!-- Promo Cards -->
+            <div class="max-w-screen-lg mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-cyan-500 rounded-xl p-6 flex flex-col items-start shadow text-white">
+                    <div class="font-bold text-lg mb-2">Pharmacy at your doorstep!</div>
+                    <div class="mb-4">Cough syrups, pain relief sprays & more</div>
+                    <img src="/images/promo-pharmacy.png" alt="Pharmacy" class="h-16 mb-4 rounded">
+                    <a href="#" class="bg-white text-cyan-600 font-semibold px-4 py-2 rounded shadow hover:bg-cyan-100">Order Now</a>
+                </div>
+                <div class="bg-yellow-400 rounded-xl p-6 flex flex-col items-start shadow text-yellow-900">
+                    <div class="font-bold text-lg mb-2">Pet Care supplies in minutes</div>
+                    <div class="mb-4">Food, treats, toys & more</div>
+                    <img src="/images/promo-petcare.png" alt="Pet Care" class="h-16 mb-4 rounded">
+                    <a href="#" class="bg-white text-yellow-700 font-semibold px-4 py-2 rounded shadow hover:bg-yellow-100">Order Now</a>
+                </div>
+                <div class="bg-blue-100 rounded-xl p-6 flex flex-col items-start shadow text-blue-900">
+                    <div class="font-bold text-lg mb-2">No time for a diaper run?</div>
+                    <div class="mb-4">Get baby care essentials in minutes</div>
+                    <img src="/images/promo-babycare.png" alt="Baby Care" class="h-16 mb-4 rounded">
+                    <a href="#" class="bg-white text-blue-700 font-semibold px-4 py-2 rounded shadow hover:bg-blue-200">Order Now</a>
+                </div>
+            </div>
+
+            <!-- Category Carousel -->
+            <div class="max-w-screen-lg mx-auto mb-8 overflow-x-auto">
+                <div class="flex space-x-4 pb-2">
+                    <% categories.forEach(function(cat) { %>
+                        <a href="/?category=<%= encodeURIComponent(cat.name) %>" class="flex flex-col items-center min-w-[110px] bg-white rounded-xl shadow p-3 hover:shadow-lg transition cursor-pointer">
+                            <img src="/images/<%= cat.name.replace(/\s|,|&/g, '_').toLowerCase() %>.jpg" alt="<%= cat.name %>" class="h-10 w-10 rounded mb-2">
+                            <span class="text-xs font-semibold text-gray-700 text-center"><%= cat.name %></span>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+
             <!-- Order Now Section -->
             <div class="bg-white p-4 rounded-lg shadow mb-4">
                 <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-semibold">Order Now</h2>
-                    <button class="text-blue-500">see all</button>
+                    <h2 class="text-lg font-semibold text-green-700">Order Now</h2>
+                    <button class="text-yellow-500 font-semibold hover:underline">See all</button>
                 </div>
-                <div class="flex space-x-4 mt-4 overflow-x-auto">
+                <div class="flex space-x-4 mt-4 overflow-x-auto pb-2">
                     <% rnproducts.forEach(function(elem){ %>
-                        <div class="flex w-32 flex-shrink-0 flex-col items-center">
+                        <div class="flex w-36 flex-shrink-0 flex-col items-center bg-gray-50 rounded-lg shadow hover:shadow-lg transition p-2">
                             <div class="relative">
-                                <img src="data:image/jpg;base64, <%= elem.image.toString('base64') %>"
-                                    alt="<%= elem.name %>" class="h-24 rounded">
+                                <img src="data:image/jpg;base64, <%= elem.image.toString('base64') %>" alt="<%= elem.name %>" class="h-24 rounded">
                             </div>
-                            <p class="text-sm text-center mt-2">
+                            <p class="text-sm text-center mt-2 font-medium">
                                 <%= elem.name %>
                             </p>
-                            <p class="text-xs text-gray-500 line-through">₹<%= Number(elem.price)+20 %>
-                            </p>
-                            <p class="font-bold">₹<%= elem.price %>
-                            </p>
-                            <a class="bg-green-700 text-white px-4 py-1 rounded mt-2" href="/cart/add/<%= elem._id %>">ADD</a>
+                            <p class="text-xs text-gray-400 line-through">₹<%= Number(elem.price)+20 %></p>
+                            <p class="font-bold text-green-700">₹<%= elem.price %></p>
+                            <a class="bg-green-700 text-white px-4 py-1 rounded mt-2 hover:bg-green-800 transition" href="/cart/add/<%= elem._id %>">ADD</a>
                         </div>
-                        <%}) %>
+                    <%}) %>
                 </div>
             </div>
 
@@ -78,46 +113,34 @@
             <!-- Grocery & Kitchen Section -->
             <% for(let key in products){ %>
                 <div class="bg-white p-4 rounded-lg shadow mb-10">
-                    <h2 class="text-lg font-semibold">
+                    <h2 class="text-lg font-semibold text-green-700">
                         <%= key %>
                     </h2>
-                    <div class="grid grid-cols-4 gap-4 mt-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
                         <% products[key].forEach(elem=>{ %>
-                            <div class="flex flex-col items-center">
-                                <img src="data:image/jpg;base64, <%= elem.image.toString('base64') %>"
-                                    alt="<%= elem.name %>" class="w-24 rounded">
-                                <p class="text-sm text-center mt-2">
+                            <div class="flex flex-col items-center bg-gray-50 rounded-lg shadow hover:shadow-lg transition p-2">
+                                <img src="data:image/jpg;base64, <%= elem.image.toString('base64') %>" alt="<%= elem.name %>" class="w-24 rounded">
+                                <p class="text-sm text-center mt-2 font-medium">
                                     <%= elem.name %>
                                 </p>
-                                <a class="px-4 text-white text-xs rounded mt-2 inline-block py-1 bg-green-700"
-                                    href="/cart/add/<%= elem._id %>">ADD</a>
+                                <a class="px-4 text-white text-xs rounded mt-2 inline-block py-1 bg-green-700 hover:bg-green-800 transition" href="/cart/add/<%= elem._id %>">ADD</a>
                             </div>
-                            <%}) %>
+                        <%}) %>
                     </div>
                 </div>
-                <% } %>
+            <% } %>
 
-                    <% if(somethingInCart){ %>
-                        <div class="py-20"></div>
-                        <!-- Footer -->
-                        <div class="bg-white p-4 rounded-lg shadow fixed bottom-0 inset-x-0">
-                            <div class="flex justify-between items-center mb-10">
-                                <div>
-                                    <p class="text-sm">Get FREE delivery</p>
-                                    <p class="text-xs text-gray-500">Add products worth ₹236 more</p>
-                                </div>
-                                <button class="text-blue-500">See all coupons</button>
-                            </div>
-                            <div class="flex justify-between items-center mt-2">
-                                <div>
-                                    <%= cartCount %> Item
-                                </div>
-                                <a href="/cart"
-                                    class="flex items-center justify-center px-32 py-3 bg-green-700 text-white rounded-lg"><span
-                                        class="text-lg">Next</span><i class="text-2xl ri-arrow-right-s-fill"></i></a>
-                            </div>
-                        </div>
-                        <% } %>
+            <% if(somethingInCart){ %>
+                <div class="py-20"></div>
+                <!-- Floating Cart Button -->
+                <div class="fixed bottom-6 right-6 z-50">
+                    <a href="/cart" class="flex items-center px-6 py-3 bg-green-700 text-white rounded-full shadow-lg hover:bg-green-800 transition">
+                        <span class="font-semibold mr-2"><%= cartCount %> Item<%= cartCount > 1 ? 's' : '' %></span>
+                        <span class="text-lg">Go to Cart</span>
+                        <i class="ri-arrow-right-s-fill text-2xl ml-2"></i>
+                    </a>
+                </div>
+            <% } %>
         </div>
 
         <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>

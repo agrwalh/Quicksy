@@ -1,20 +1,22 @@
-<%- include('./partials/header'); %>
-
-    <body class="h-screen w-screen flex items-center justify-center bg-gray-100">
-
-        <div class="relative h-full w-full">
-            <!-- Full-screen Image -->
-            <img src="/images/blinkit.jpg" alt="Background Image" class="object-cover w-full h-full">
-
-            <!-- Button at the Bottom -->
-            <div class="absolute bottom-0 w-full flex justify-center mb-8">
-                <a href="/auth/google"
-                    class="bg-black text-white font-semibold py-3 px-6 rounded-lg hover:bg-black transition duration-300">
-                    Continue with Google
-                </a>
+<%- include('./partials/header', { cartCount: 0, categories: categories || [], user: typeof user !== 'undefined' ? user : null }) %>
+<div class="flex flex-col items-center justify-center min-h-[60vh]">
+    <div class="bg-white p-8 rounded shadow max-w-md w-full">
+        <h2 class="text-2xl font-bold mb-6 text-green-700 text-center">Login</h2>
+        <form action="#" method="post" class="space-y-4">
+            <div>
+                <label class="block text-gray-700">Email</label>
+                <input type="email" name="email" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400" required>
             </div>
-        </div>
-
-    </body>
-
-    <%- include('./partials/footer'); %>
+            <div>
+                <label class="block text-gray-700">Password</label>
+                <input type="password" name="password" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-green-400" required>
+            </div>
+            <button type="submit" class="w-full bg-green-700 text-white py-2 rounded hover:bg-green-800 transition">Login</button>
+        </form>
+        <a href="/auth/google" class="w-full block bg-black text-white font-semibold py-2 px-6 rounded-lg hover:bg-gray-900 text-center mt-4 transition duration-300">
+            <i class="ri-google-fill mr-2"></i>Continue with Google
+        </a>
+        <a href="/" class="block text-center text-green-700 mt-4 hover:underline">Back to Home</a>
+    </div>
+</div>
+<%- include('./partials/footer') %>

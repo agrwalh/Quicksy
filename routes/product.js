@@ -18,7 +18,6 @@ router.get('/', async (req, res) => {
     });
     let somethingInCart = false;
     let cartCount = 0;
-    // If you have user authentication and cart logic, you can check for cart items here
     if (req.user && req.user._id) {
         const { cartModel } = require('../models/cart');
         const cart = await cartModel.findOne({ user: req.user._id });
@@ -27,7 +26,9 @@ router.get('/', async (req, res) => {
             cartCount = cart.products.length;
         }
     }
-    res.render("index", { rnproducts, products, somethingInCart, cartCount });
+    // Fetch all categories for the navbar/footer
+    const categories = await categoryModel.find({});
+    res.render("index", { rnproducts, products, somethingInCart, cartCount, categories, user: req.user });
 });
 router.get('/delete/:id', async (req, res) => {
     try {

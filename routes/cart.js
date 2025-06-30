@@ -3,6 +3,7 @@ const router = express.Router();
 const { cartModel, validateCategory } = require('../models/cart');
 const { validateAdmin, userIsLoggedIn } = require('../middlewares/admin');
 const { productModel } = require('../models/product'); // <-- FIXED
+const { categoryModel } = require('../models/category');
 
 // Test route to check if cart is working
 router.get("/test", async (req, res) => {
@@ -38,17 +39,26 @@ router.get("/", userIsLoggedIn, async (req, res) => {
         }
         // Calculate final price with delivery charges
         const finalprice = cart.totalPrice + 34; // 30 delivery + 4 handling
+        // Fetch categories for the footer
+        const categories = await categoryModel.find({});
         res.render('cart', {
             cart: cart.products,
             finalprice: finalprice,
-            userid: req.session.passport.user
+            userid: req.session.passport.user,
+            categories,
+            cartCount: cart.products.length,
+            user: req.user
         });
     } catch (err) {
+        const categories = await categoryModel.find({});
         res.status(500).render('cart', {
             cart: [],
             finalprice: 34,
             userid: req.session.passport.user,
-            error: 'Error loading cart: ' + err.message
+            error: 'Error loading cart: ' + err.message,
+            categories,
+            cartCount: 0,
+            user: req.user
         });
     }
 });
