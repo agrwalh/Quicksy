@@ -217,7 +217,7 @@
                     axios.post('/payment/create/orderId')
                         .then(function (response) {
                             var options = {
-                                "key": "rzp_test_cAa3gCF0eP8i4R", // Enter the Key ID generated from the Dashboard
+                                "key": "rzp_test_CILoD5f39Ac7UB", // Enter the Key ID generated from the Dashboard
                                 "amount": response.data.amount, // Amount in currency subunits. Default currency is INR.
                                 "currency": response.data.currency,
                                 "name": "BlinkIt",
@@ -228,7 +228,8 @@
                                     axios.post('/payment/api/payment/verify', {
                                         razorpayOrderId: response.razorpay_order_id,
                                         razorpayPaymentId: response.razorpay_payment_id,
-                                        signature: response.razorpay_signature
+                                        signature: response.razorpay_signature,
+                                        userId: "<%= userid %>"
                                     })
                                         .then(function (response) {
                                             let { razorpayOrderId, razorpayPaymentId, signature } = JSON.parse(response.config.data)
@@ -239,8 +240,8 @@
                                         });
                                 },
                                 "prefill": {
-                                    "name": "Harsh Sharma",
-                                    "email": "harsh.sharma@example.com",
+                                    "name": "Harsh Agarwal",
+                                    "email": "harsh.agarwal@example.com",
                                     "contact": "9000090000"
                                 },
                                 "notes": {

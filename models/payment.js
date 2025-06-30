@@ -3,32 +3,29 @@ const Joi = require('joi');
 
 // Mongoose Schema
 const paymentSchema = new mongoose.Schema({
-  order: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'order',
-    required: true
+  orderId: {
+    type:String,
+    required:true,
   },
-  amount: {
-    type: Number,
-    required: true,
-    min: 0
+  paymentId:{
+    type:String,
   },
-  method: {
-    type: String,
-    // enum: ['credit_card', 'upi', 'netbanking', 'cod','debit_card'],
-    required: true
+  signature:{
+    type:String,
   },
-  status: {
-    type: String,
-    // enum: ['pending', 'successful', 'failed'],
-    // default: 'pending'
-    required: true,
+ 
+  amount:{
+    type:Number,
+    required:true,
   },
-  transactionId: {
-    type: String,
-    required: true,
-    unique: true
-  }
+  currency:{
+    type:String,
+    required:true,
+  },
+  status:{
+    type:String,
+    default:"pending",
+  },
 }, {
   timestamps: true
 });
@@ -51,6 +48,6 @@ function validatePayment(data) {
 
 // Exports
 module.exports = {
-  paymentModel:mongoose.model('Payment', paymentSchema),
+  paymentModel: Payment,
   validatePayment
 };

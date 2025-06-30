@@ -88,4 +88,19 @@ router.get('/profile', async (req, res) => {
     res.render('user_profile', { user: req.user, categories, cartCount });
 });
 
+router.get('/order/:userid/:orderid/:paymentid/:signature', async (req, res) => {
+    const { userid, orderid, paymentid, signature } = req.params;
+    const payment = await require('../models/payment').paymentModel.findOne({ orderId: orderid });
+    res.render('order_success', {
+        userid,
+        orderid,
+        paymentid,
+        signature,
+        payment,
+        user: req.user,
+        categories: [],
+        cartCount: 0
+    });
+});
+
 module.exports = router;

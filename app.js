@@ -11,6 +11,8 @@ const productRouter = require('./routes/product');
 const categoriesRouter = require('./routes/category');
 const userRouter=require("./routes/user")
 const cartRouter=require("./routes/cart")
+const paymentRouter=require("./routes/payment")
+const orderRouter=require("./routes/order")
 
 require('dotenv').config();
 require('./config/db');
@@ -40,6 +42,8 @@ app.use("/products", productRouter);
 app.use("/categories",categoriesRouter);
 app.use("/users",userRouter);
 app.use("/cart",cartRouter);
+app.use("/payment",paymentRouter);
+app.use("/order",orderRouter);
 
 
 app.listen(3000, () => {
