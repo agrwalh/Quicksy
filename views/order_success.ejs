@@ -1,17 +1,60 @@
 <%- include('./partials/header', { cartCount: cartCount, categories: categories, user: user }) %>
-<div class="flex flex-col items-center justify-center min-h-[60vh]">
-  <div class="bg-white p-8 rounded shadow max-w-md w-full text-center">
+<div class="flex flex-col items-center justify-center min-h-[60vh] bg-gray-50">
+  <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border-t-8 <%= (payment && payment.status === 'completed') ? 'border-green-500' : 'border-red-500' %>">
     <% if (payment && payment.status === 'completed') { %>
-      <h2 class="text-2xl font-bold mb-6 text-green-700">Payment Successful!</h2>
-      <p class="mb-2">Thank you for your purchase.</p>
-      <p><strong>Order ID:</strong> <%= orderid %></p>
-      <p><strong>Payment ID:</strong> <%= paymentid %></p>
+      <!-- Confetti effect -->
+      <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+      <div class="flex justify-center mb-4">
+        <div class="bg-green-100 rounded-full p-4 animate-bounce">
+          <svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="white"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="2"/></svg>
+        </div>
+      </div>
+      <h2 class="text-3xl font-extrabold mb-2 text-green-700 tracking-tight">Payment Successful!</h2>
+      <p class="mb-4 text-gray-700">Thank you for your purchase. Your order is confirmed!</p>
+      <div class="flex flex-col items-center mb-4">
+        <span class="text-xs text-gray-500">Order ID</span>
+        <span class="font-mono text-lg text-gray-800 bg-gray-100 px-2 py-1 rounded mt-1"><%= orderid %></span>
+      </div>
+      <div class="flex flex-col items-center mb-6">
+        <span class="text-xs text-gray-500">Payment ID</span>
+        <span class="font-mono text-lg text-gray-800 bg-gray-100 px-2 py-1 rounded mt-1"><%= paymentid %></span>
+      </div>
+      <a href="/map/<%= orderid %>" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition mb-2">Track Order</a>
     <% } else { %>
-      <h2 class="text-2xl font-bold mb-6 text-red-700">Payment Failed!</h2>
-      <p class="mb-2">There was a problem with your payment.</p>
-      <a href="/cart" class="block text-center text-green-700 mt-4 hover:underline">Back to Cart</a>
+      <div class="flex justify-center mb-4">
+        <div class="bg-red-100 rounded-full p-4 animate-shake">
+          <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="white"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l6 6m0-6l-6 6" stroke="currentColor" stroke-width="2"/></svg>
+        </div>
+      </div>
+      <h2 class="text-3xl font-extrabold mb-2 text-red-700 tracking-tight">Payment Failed!</h2>
+      <p class="mb-4 text-gray-700">There was a problem with your payment.</p>
+      <a href="/cart" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg shadow transition mb-2">Back to Cart</a>
     <% } %>
-    <a href="/" class="block text-center text-green-700 mt-4 hover:underline">Back to Home</a>
+    <a href="/" class="block text-center text-green-700 mt-2 hover:underline">Back to Home</a>
   </div>
 </div>
-<%- include('./partials/footer') %> 
+<%- include('./partials/footer') %>
+
+<!-- Confetti JS (only for success) -->
+<% if (payment && payment.status === 'completed') { %>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+  window.onload = function() {
+    confetti.create(document.getElementById('confetti-canvas'), { resize: true })({
+      particleCount: 200,
+      spread: 90,
+      origin: { y: 0.6 }
+    });
+  };
+</script>
+<% } %>
+
+<!-- Animations -->
+<style>
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+.animate-shake { animation: shake 0.6s; }
+</style> 
