@@ -233,7 +233,7 @@
                                     })
                                         .then(function (response) {
                                             let { razorpayOrderId, razorpayPaymentId, signature } = JSON.parse(response.config.data)
-                                            window.location.href = `/order/<%= userid %>/${razorpayOrderId}/${razorpayPaymentId}/${signature}`
+                                            window.location.href = `/map/${razorpayOrderId}`
                                         })
                                         .catch(function (error) {
                                             console.error(error);

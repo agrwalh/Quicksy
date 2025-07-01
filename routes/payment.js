@@ -6,6 +6,7 @@ const { paymentModel } = require("../models/payment");
 const { validatePaymentVerification } = require("razorpay/dist/utils/razorpay-utils");
 const { orderModel } = require("../models/order");
 const { cartModel } = require("../models/cart");
+const { deliveryModel } = require("../models/delivery");
 
 const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -69,13 +70,23 @@ router.post("/api/payment/verify", async (req, res) => {
                 cart = await cartModel.findOne({ user: userId });
             }
             if (cart && cart.products.length > 0) {
-                await orderModel.create({
+                const newOrder = await orderModel.create({
+                    orderId: razorpay_order_id,
                     user: cart.user,
                     products: cart.products.map(p => p.product),
                     totalPrice: cart.totalPrice,
                     address: "N/A", // You can update this to use real address
                     status: "confirmed",
                     payment: payment._id
+                });
+                // Create delivery document
+                await deliveryModel.create({
+                    order: newOrder._id,
+                    deliveryBoy: "Raju",
+                    status: "pending",
+                    estimatedDeliveryTime: 15,
+                    totalPrice: cart.totalPrice,
+                    currentLocation: { lat: 28.6139, lng: 77.2090 }
                 });
                 // Optionally clear the cart
                 cart.products = [];

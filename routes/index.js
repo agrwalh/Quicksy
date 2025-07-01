@@ -3,6 +3,8 @@ const router = express.Router();
 const { productModel } = require('../models/product');
 const { cartModel } = require('../models/cart');
 const { categoryModel } = require('../models/category');
+const { orderModel } = require('../models/order');
+const { deliveryModel } = require('../models/delivery');
 
 router.get('/', async function (req, res) {
     try {
@@ -100,6 +102,24 @@ router.get('/order/:userid/:orderid/:paymentid/:signature', async (req, res) => 
         user: req.user,
         categories: [],
         cartCount: 0
+    });
+});
+
+router.get('/map/:orderid', async (req, res) => {
+    const { orderid } = req.params;
+    // Find the order by orderId
+    const order = await orderModel.findOne({ orderId: orderid });
+    // Find the delivery info for this order
+    let delivery = null;
+    if (order) {
+        delivery = await deliveryModel.findOne({ order: order._id });
+    }
+    // Pass status, estimated time, and order address (for EJS logic)
+    res.render('map', {
+        orderid,
+        orderStatus: order ? order.status : 'N/A',
+        estimatedDeliveryTime: delivery ? delivery.estimatedDeliveryTime : null,
+        orderAddress: order ? order.address : null
     });
 });
 

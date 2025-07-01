@@ -29,6 +29,14 @@ const deliverySchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 0
+  },
+  currentLocation: {
+    type: { lat: Number, lng: Number },
+    default: { lat: 28.6139, lng: 77.2090 } // Start at warehouse (Delhi)
+  },
+  destination: {
+    type: { lat: Number, lng: Number },
+    default: null
   }
 }, {
   timestamps: true

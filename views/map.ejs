@@ -36,29 +36,91 @@
         .leaflet-top+.leaflet-right {
             display: none;
         }
+
+        body { background: #f7fafc; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; }
     </style>
 </head>
 
 <body>
+    <div class="flex justify-center mt-8">
+        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg flex flex-col items-center border border-gray-100">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide
+                    <% if (orderStatus === 'confirmed') { %> bg-green-100 text-green-700 <% } else if (orderStatus === 'pending') { %> bg-yellow-100 text-yellow-700 <% } else { %> bg-gray-200 text-gray-700 <% } %>">
+                    <%= orderStatus.charAt(0).toUpperCase() + orderStatus.slice(1) %>
+                </span>
+                <span class="text-gray-400 text-xs">Order ID: <span class="font-mono"><%= orderid %></span></span>
+            </div>
+            <h2 class="text-2xl font-extrabold text-gray-800 mb-2 tracking-tight">Order Status</h2>
+            <div class="flex items-center gap-2 mb-2">
+                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-lg font-semibold text-green-700">Confirmed</span>
+            </div>
+            <div class="flex flex-col items-center mb-4">
+                <span class="text-gray-500 text-sm">Estimated delivery</span>
+                <span class="text-3xl font-bold text-green-700 mt-1">
+                    <% if (estimatedDeliveryTime) { %>
+                        <%= estimatedDeliveryTime %> <span class="text-lg font-medium">minutes</span>
+                    <% } else { %>
+                        Updating...
+                    <% } %>
+                </span>
+            </div>
+            <div class="w-full flex flex-col items-center mb-4">
+                <span class="text-gray-500 text-sm">Destination</span>
+                <span class="font-semibold text-gray-800 text-lg mt-1">
+                    <% if (orderAddress && orderAddress !== 'N/A') { %>
+                        <%= orderAddress %>
+                    <% } else { %>
+                        Not set
+                    <% } %>
+                </span>
+            </div>
+            <!-- Progress bar -->
+            <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+                <div id="progress-bar" class="bg-green-500 h-3 rounded-full transition-all duration-500" style="width: 20%"></div>
+            </div>
+            <span id="progress-label" class="text-xs text-gray-500">Preparing your order...</span>
+        </div>
+    </div>
 
+    <% if (!orderAddress || orderAddress === 'N/A') { %>
     <div id="inputs">
         <form method="post" action="/order/address/<%= orderid %>">
             <label for="end">Destination:</label>
             <input type="text" name="address" id="end" placeholder="Enter destination">
             <div id="suggestions" class="autocomplete-suggestions"></div>
-            <input type="submit" value="get order">
+            <input type="submit" value="Save Address">
         </form>
     </div>
-
+    <% } else { %>
     <div id="map"></div>
+    <% } %>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <script>
-        let startLatLng, endLatLng;
+        let endLatLng;
         let userMarker;
+        // Fixed warehouse/delivery start location (e.g., Delhi)
+        const warehouseLatLng = L.latLng(28.6139, 77.2090); // Example: Delhi
+        let deliveryBoyMarker = null;
+
+        // Helper: get delivery destination from backend (if available)
+        async function getDeliveryDestination() {
+            try {
+                const res = await fetch(`/order/delivery/info/<%= orderid %>`);
+                const data = await res.json();
+                if (data.destination && data.destination.lat && data.destination.lng) {
+                    return L.latLng(data.destination.lat, data.destination.lng);
+                }
+            } catch (err) {
+                console.error('Error fetching delivery destination:', err);
+            }
+            return null;
+        }
 
         // Initialize the map
         const map = L.map('map').setView([20.5937, 78.9629], 5); // Centered on India as an example
@@ -68,9 +130,11 @@
             maxZoom: 19,
         }).addTo(map);
 
-        // Track the user's location in real-time
+        // Try to get user location, else fallback to warehouse
+        let userLocationAvailable = false;
         if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(position => {
+            navigator.geolocation.watchPosition(async position => {
+                userLocationAvailable = true;
                 startLatLng = L.latLng(position.coords.latitude, position.coords.longitude);
 
                 // Update the marker for the user's current location
@@ -83,8 +147,27 @@
 
                 // Center the map on the new location
                 map.setView(startLatLng, 13);
-            }, error => {
+
+                // If delivery destination is available, show route
+                const dest = await getDeliveryDestination();
+                if (dest) {
+                    endLatLng = dest;
+                    generateRoute(startLatLng);
+                }
+            }, async error => {
                 console.error("Error watching position:", error);
+                // Show a user-friendly message
+                const geoErrorDiv = document.createElement('div');
+                geoErrorDiv.style.color = 'red';
+                geoErrorDiv.style.margin = '10px';
+                geoErrorDiv.innerText = 'Unable to get your location. Please allow location access or check your browser settings.';
+                document.body.insertBefore(geoErrorDiv, document.body.firstChild);
+                // Fallback: use warehouse as start, show route to destination
+                const dest = await getDeliveryDestination();
+                if (dest) {
+                    endLatLng = dest;
+                    generateRoute(warehouseLatLng);
+                }
             }, {
                 enableHighAccuracy: true,
                 timeout: 30000,
@@ -92,6 +175,14 @@
             });
         } else {
             alert("Geolocation is not supported by this browser.");
+            // Fallback: use warehouse as start, show route to destination
+            (async () => {
+                const dest = await getDeliveryDestination();
+                if (dest) {
+                    endLatLng = dest;
+                    generateRoute(warehouseLatLng);
+                }
+            })();
         }
 
         // Set up the geocoder for destination input
@@ -117,27 +208,125 @@
             });
         });
 
-        // Function to generate a route between two locations
-        function generateRoute() {
-            if (!startLatLng || !endLatLng) {
+        // Function to generate a route between delivery boy and destination
+        function generateRoute(deliveryLatLng) {
+            if (!endLatLng) {
                 alert("Please select valid locations.");
                 return;
             }
-
             // Remove any existing routing control
             if (window.routingControl) {
                 map.removeControl(window.routingControl);
             }
-
             // Add the new routing control with the specified waypoints
             window.routingControl = L.Routing.control({
                 waypoints: [
-                    startLatLng,
+                    deliveryLatLng || warehouseLatLng,
                     endLatLng
                 ],
-                routeWhileDragging: true,
+                routeWhileDragging: false,
+                show: false,
+                addWaypoints: false,
+                draggableWaypoints: false,
+                fitSelectedRoutes: true,
+                createMarker: function() { return null; }
             }).addTo(map);
+
+            window.routingControl.on('routesfound', function(e) {
+                const route = e.routes[0];
+                const timeInMinutes = Math.round(route.summary.totalTime / 60);
+                document.getElementById('delivery-time').innerText = `Estimated delivery: ${timeInMinutes} minutes`;
+            });
         }
+
+        // Always fetch and set the delivery destination on page load
+        (async function() {
+            const dest = await getDeliveryDestination();
+            if (dest) {
+                endLatLng = dest;
+            }
+        })();
+
+        // Live delivery boy tracking
+        function fetchDeliveryBoyLocation() {
+            fetch(`/order/delivery/location/<%= orderid %>`)
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Delivery location data:', data); // Debug log
+                    if (data.location) {
+                        const latlng = L.latLng(data.location.lat, data.location.lng);
+                        if (!deliveryBoyMarker) {
+                            deliveryBoyMarker = L.marker(latlng, {icon: L.icon({
+                                iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // static PNG for fallback
+                                iconSize: [48, 48],
+                                iconAnchor: [24, 48]
+                            })}).addTo(map).bindPopup('Delivery Boy');
+                        } else {
+                            deliveryBoyMarker.setLatLng(latlng);
+                        }
+                        map.panTo(latlng, { animate: true, duration: 1 });
+                        if (endLatLng) {
+                            generateRoute(latlng);
+                        }
+                    }
+                });
+        }
+        // Poll every 5 seconds
+        setInterval(fetchDeliveryBoyLocation, 5000);
+        fetchDeliveryBoyLocation();
+
+        <% if (!orderAddress || orderAddress === 'N/A') { %>
+        // Only run the address form JS if address is not set
+        const addressForm = document.querySelector('form');
+        if (addressForm) {
+          addressForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = e.target;
+            function addHiddenAndSubmit(latlng) {
+                form.querySelectorAll('input[name="lat"], input[name="lng"]').forEach(el => el.remove());
+                const inputLat = document.createElement('input');
+                inputLat.type = 'hidden';
+                inputLat.name = 'lat';
+                inputLat.value = latlng.lat;
+                form.appendChild(inputLat);
+                const inputLng = document.createElement('input');
+                inputLng.type = 'hidden';
+                inputLng.name = 'lng';
+                inputLng.value = latlng.lng;
+                form.appendChild(inputLng);
+                form.submit();
+            }
+            if (endLatLng) {
+                addHiddenAndSubmit(endLatLng);
+            } else {
+                geocoder.geocode(endInput.value, function(results) {
+                    if (results && results.length > 0) {
+                        endLatLng = results[0].center;
+                        addHiddenAndSubmit(endLatLng);
+                    } else {
+                        alert("Please select a location from the suggestions before submitting!");
+                    }
+                });
+            }
+          });
+        }
+        <% } %>
+
+        // Update progress bar based on estimated delivery time
+        function updateProgressBar(time) {
+            // For demo: 0-60 min = 0-100%
+            let percent = 100 - Math.min(100, Math.round((time / 60) * 100));
+            document.getElementById('progress-bar').style.width = percent + '%';
+            let label = 'Preparing your order...';
+            if (percent > 80) label = 'Almost there!';
+            else if (percent > 50) label = 'On the way!';
+            else if (percent > 20) label = 'Packing your order...';
+            document.getElementById('progress-label').innerText = label;
+        }
+        // Call on load and whenever delivery time updates
+        <% if (estimatedDeliveryTime) { %>
+        updateProgressBar(<%= estimatedDeliveryTime %>);
+        <% } %>
     </script>
 
 </body>

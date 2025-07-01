@@ -3,6 +3,12 @@ const Joi = require('joi');
 
 // Mongoose Schema
 const orderSchema = new mongoose.Schema({
+
+  orderId: {
+    type: String,
+    required: true,
+    unique: true
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
