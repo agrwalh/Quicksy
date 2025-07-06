@@ -82,7 +82,7 @@ router.post("/address/:orderid", async function (req, res) {
             const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
             const query = encodeURIComponent(address);
             const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}`;
-            const response = await fetch(url, { headers: { 'User-Agent': 'blinkit-app/1.0' } });
+            const response = await fetch(url, { headers: { 'User-Agent': 'quicksy-app/1.0' } });
             const data = await response.json();
             console.log('Geocoding result:', data);
             if (data && data.length > 0) {

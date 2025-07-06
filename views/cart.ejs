@@ -29,7 +29,7 @@
                     <% cart.forEach(elem => { %>
                         <% if (elem.product && typeof elem.product === 'object' && elem.product.name) { %>
                             <div class="flex items-center mt-4">
-                                <img src="<% if (elem.product.image && typeof elem.product.image.toString === 'function') { %>data:image/jpg;base64, <%= elem.product.image.toString('base64') %><% } else { %>/images/blinkit.jpg<% } %>" alt="<%= elem.product ? elem.product.name : '' %>"
+                                <img src="<% if (elem.product.image && typeof elem.product.image.toString === 'function') { %>data:image/jpg;base64, <%= elem.product.image.toString('base64') %><% } else { %>/images/quicksy.jpg<% } %>" alt="<%= elem.product ? elem.product.name : '' %>"
                                     class="w-16 h-16 rounded">
                                 <div class="ml-4">
                                     <p>
@@ -220,7 +220,7 @@
                                 "key": "rzp_test_CILoD5f39Ac7UB", // Enter the Key ID generated from the Dashboard
                                 "amount": response.data.amount, // Amount in currency subunits. Default currency is INR.
                                 "currency": response.data.currency,
-                                "name": "BlinkIt",
+                                "name": "Quicksy",
                                 "description": "Test Transaction",
                                 "image": "https://example.com/your_logo",
                                 "order_id": response.data.id,
