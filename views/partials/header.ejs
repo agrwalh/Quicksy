@@ -19,7 +19,11 @@
             </div>
             <div class="hidden md:flex flex-col items-center flex-1">
                 <span class="text-xs text-gray-500">Delivery in <span class="font-semibold text-black">8 minutes</span></span>
-                <span class="text-sm font-medium">Delhi, India</span>
+                <% if (typeof selectedAddress !== 'undefined' && selectedAddress && selectedAddress.address) { %>
+                  <span class="text-sm font-medium"><%= selectedAddress.address %>, <%= selectedAddress.city %>, <%= selectedAddress.state %> - <%= selectedAddress.zip %></span>
+                <% } else { %>
+                  <span class="text-sm font-medium text-gray-400">Set your location</span>
+                <% } %>
             </div>
             <form action="/search" method="get" class="flex-1 flex justify-center">
                 <input type="text" name="q" placeholder="Search 'sugar'" class="w-full max-w-lg px-6 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-lg shadow-sm">

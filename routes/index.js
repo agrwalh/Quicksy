@@ -28,7 +28,7 @@ router.get('/', async function (req, res) {
         }
         // Fetch all categories for the navbar
         const categories = await categoryModel.find({});
-        res.render("index", { rnproducts, products, somethingInCart, cartCount, categories, user: req.user });
+        res.render("index", { rnproducts, products, somethingInCart, cartCount, categories, user: req.user, selectedAddress: req.session.selectedAddress });
     } catch (err) {
         console.error('Index route error:', err);
         res.status(500).send('Error fetching products');
@@ -93,6 +93,7 @@ router.get('/profile', async (req, res) => {
 router.get('/order/:userid/:orderid/:paymentid/:signature', async (req, res) => {
     const { userid, orderid, paymentid, signature } = req.params;
     const payment = await require('../models/payment').paymentModel.findOne({ orderId: orderid });
+    const order = await require('../models/order').orderModel.findOne({ orderId: orderid });
     res.render('order_success', {
         userid,
         orderid,
@@ -101,7 +102,8 @@ router.get('/order/:userid/:orderid/:paymentid/:signature', async (req, res) => 
         payment,
         user: req.user,
         categories: [],
-        cartCount: 0
+        cartCount: 0,
+        orderAddress: order ? order.address : null
     });
 });
 
@@ -119,7 +121,8 @@ router.get('/map/:orderid', async (req, res) => {
         orderid,
         orderStatus: order ? order.status : 'N/A',
         estimatedDeliveryTime: delivery ? delivery.estimatedDeliveryTime : null,
-        orderAddress: order ? order.address : null
+        orderAddress: order ? order.address : null,
+        selectedAddress: req.session.selectedAddress || null
     });
 });
 

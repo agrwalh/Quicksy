@@ -1,36 +1,63 @@
 <%- include('./partials/header', { cartCount: cartCount, categories: categories, user: user }) %>
-<div class="flex flex-col items-center justify-center min-h-[60vh] bg-gray-50">
-  <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border-t-8 <%= (payment && payment.status === 'completed') ? 'border-green-500' : 'border-red-500' %>">
+<div class="flex flex-col items-center justify-center min-h-[60vh] bg-gradient-to-br from-white via-green-50 to-pink-50">
+  <div class="bg-white p-6 rounded-2xl shadow-xl max-w-md w-full text-center border-t-8 <%= (payment && payment.status === 'completed') ? 'border-green-500' : 'border-red-500' %> relative overflow-hidden">
     <% if (payment && payment.status === 'completed') { %>
-      <!-- Confetti effect -->
-      <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
-      <div class="flex justify-center mb-4">
-        <div class="bg-green-100 rounded-full p-4 animate-bounce">
-          <svg class="w-16 h-16 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="white"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="2"/></svg>
-        </div>
-      </div>
-      <h2 class="text-3xl font-extrabold mb-2 text-green-700 tracking-tight">Payment Successful!</h2>
-      <p class="mb-4 text-gray-700">Thank you for your purchase. Your order is confirmed!</p>
+      <!-- Small, centered tick -->
       <div class="flex flex-col items-center mb-4">
-        <span class="text-xs text-gray-500">Order ID</span>
-        <span class="font-mono text-lg text-gray-800 bg-gray-100 px-2 py-1 rounded mt-1"><%= orderid %></span>
+        <div class="bg-green-100 rounded-full flex items-center justify-center shadow mb-2" style="width:48px;height:48px;">
+          <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="white"/><path stroke-linecap="round" stroke-linejoin="round" d="M8 12l3 3 5-5" stroke="currentColor" stroke-width="2.5"/></svg>
+        </div>
+        <h2 class="text-xl font-bold text-green-700 mt-2 mb-1">Order Confirmed</h2>
+        <p class="text-gray-600 text-sm mb-2">Thank you for your order! We're getting it ready for you.</p>
       </div>
-      <div class="flex flex-col items-center mb-6">
-        <span class="text-xs text-gray-500">Payment ID</span>
-        <span class="font-mono text-lg text-gray-800 bg-gray-100 px-2 py-1 rounded mt-1"><%= paymentid %></span>
+      <% if (orderAddress) { %>
+      <div class="flex flex-col items-center mb-2">
+        <span class="text-xs text-gray-500">Delivery Address</span>
+        <span class="font-mono text-base text-gray-800 bg-green-50 px-2 py-1 rounded mt-1 shadow-sm"><%= orderAddress %></span>
       </div>
-      <a href="/map/<%= orderid %>" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition mb-2">Track Order</a>
-    <% } else { %>
-      <div class="flex justify-center mb-4">
-        <div class="bg-red-100 rounded-full p-4 animate-shake">
-          <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="white"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l6 6m0-6l-6 6" stroke="currentColor" stroke-width="2"/></svg>
+      <% } %>
+      <!-- Progress Bar with icons -->
+      <div class="w-full flex flex-col items-center mb-4">
+        <div class="flex justify-between items-center w-4/5 mx-auto mb-1">
+          <div class="flex flex-col items-center">
+            <div class="bg-green-500 text-white rounded-full w-6 h-6 flex items-center justify-center"><i class="ri-checkbox-circle-line"></i></div>
+            <span class="text-xs mt-1 text-green-700 font-semibold">Placed</span>
+          </div>
+          <div class="flex-1 h-1 bg-green-200 mx-1"></div>
+          <div class="flex flex-col items-center">
+            <div class="bg-green-200 text-green-700 rounded-full w-6 h-6 flex items-center justify-center"><i class="ri-time-line"></i></div>
+            <span class="text-xs mt-1 text-green-700">Processing</span>
+          </div>
+          <div class="flex-1 h-1 bg-green-200 mx-1"></div>
+          <div class="flex flex-col items-center">
+            <div class="bg-green-200 text-green-700 rounded-full w-6 h-6 flex items-center justify-center"><i class="ri-truck-line"></i></div>
+            <span class="text-xs mt-1 text-green-700">Delivered</span>
+          </div>
         </div>
       </div>
-      <h2 class="text-3xl font-extrabold mb-2 text-red-700 tracking-tight">Payment Failed!</h2>
-      <p class="mb-4 text-gray-700">There was a problem with your payment.</p>
-      <a href="/cart" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg shadow transition mb-2">Back to Cart</a>
+      <div class="flex flex-col items-center mb-2">
+        <span class="text-xs text-gray-500">Order ID</span>
+        <span class="font-mono text-base text-gray-800 bg-green-50 px-2 py-1 rounded mt-1 shadow-sm">#<%= orderid %></span>
+      </div>
+      <div class="flex flex-col items-center mb-4">
+        <span class="text-xs text-gray-500">Payment ID</span>
+        <span class="font-mono text-base text-gray-800 bg-yellow-50 px-2 py-1 rounded mt-1 shadow-sm">#<%= paymentid %></span>
+      </div>
+      <a href="/map/<%= orderid %>" class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition mb-2 text-base tracking-wide">Track Order</a>
+    <% } else { %>
+      <div class="flex flex-col items-center mb-4">
+        <div class="bg-red-100 rounded-full flex items-center justify-center shadow mb-2" style="width:48px;height:48px;">
+          <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="white"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 9l6 6m0-6l-6 6" stroke="currentColor" stroke-width="2.5"/></svg>
+        </div>
+        <h2 class="text-xl font-bold text-red-700 mt-2 mb-1">Payment Failed</h2>
+        <p class="text-gray-600 text-sm mb-2">There was a problem with your payment. Please try again.</p>
+      </div>
+      <a href="/cart" class="inline-block bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 rounded-lg shadow transition mb-2 text-base">Back to Cart</a>
     <% } %>
-    <a href="/" class="block text-center text-green-700 mt-2 hover:underline">Back to Home</a>
+    <a href="/" class="block text-center text-green-700 mt-4 hover:underline text-base font-semibold">&larr; Back to Home</a>
+    <!-- Decorative SVGs -->
+    <svg class="absolute -top-8 -left-8 w-12 h-12 opacity-10 rotate-12" viewBox="0 0 100 100"><text x="0" y="60" font-size="60">🎊</text></svg>
+    <svg class="absolute -bottom-8 -right-8 w-12 h-12 opacity-10 -rotate-12" viewBox="0 0 100 100"><text x="0" y="60" font-size="60">🎈</text></svg>
   </div>
 </div>
 <%- include('./partials/footer') %>
@@ -51,10 +78,5 @@
 
 <!-- Animations -->
 <style>
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-8px); }
-  40%, 80% { transform: translateX(8px); }
-}
-.animate-shake { animation: shake 0.6s; }
+@import url('https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css');
 </style> 

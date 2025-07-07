@@ -31,7 +31,7 @@ router.get("/:userid/:orderid/:paymentid/:signature", async function (req, res) 
             totalPrice: cart.totalPrice,
             status: "processing",
             payment: paymentDetails._id,
-            address: "N/A" // Or handle address via POST
+            address: req.session.selectedAddress && req.session.selectedAddress.address ? (req.session.selectedAddress.address + ', ' + req.session.selectedAddress.city + ', ' + req.session.selectedAddress.state + ' - ' + req.session.selectedAddress.zip) : "N/A"
          });
 
          // Create delivery document
@@ -139,6 +139,25 @@ router.get('/delivery/info/:orderid', async (req, res) => {
   const delivery = await deliveryModel.findOne({ order: order._id });
   if (!delivery) return res.status(404).json({ error: 'Delivery not found' });
   res.json({ destination: delivery.destination });
+});
+
+router.get('/map/:orderid', async (req, res) => {
+    const { orderid } = req.params;
+    // Find the order by orderId
+    const order = await orderModel.findOne({ orderId: orderid });
+    // Find the delivery info for this order
+    let delivery = null;
+    if (order) {
+        delivery = await deliveryModel.findOne({ order: order._id });
+    }
+    // Pass status, estimated time, and order address (for EJS logic)
+    res.render('map', {
+        orderid,
+        orderStatus: order ? order.status : 'N/A',
+        estimatedDeliveryTime: delivery ? delivery.estimatedDeliveryTime : null,
+        orderAddress: order ? order.address : null,
+        selectedAddress: req.session.selectedAddress || null
+    });
 });
 
 module.exports = router;

@@ -88,7 +88,7 @@
     <div id="inputs">
         <form method="post" action="/order/address/<%= orderid %>">
             <label for="end">Destination:</label>
-            <input type="text" name="address" id="end" placeholder="Enter destination">
+            <input type="text" name="address" id="end" placeholder="Enter destination" value="<%= selectedAddress && selectedAddress.address ? (selectedAddress.address + ', ' + selectedAddress.city + ', ' + selectedAddress.state + ' - ' + selectedAddress.zip) : '' %>">
             <div id="suggestions" class="autocomplete-suggestions"></div>
             <input type="submit" value="Save Address">
         </form>

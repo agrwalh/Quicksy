@@ -47,7 +47,8 @@ router.get("/", userIsLoggedIn, async (req, res) => {
             userid: req.session.passport.user,
             categories,
             cartCount: cart.products.length,
-            user: req.user
+            user: req.user,
+            selectedAddress: req.session.selectedAddress || null
         });
     } catch (err) {
         const categories = await categoryModel.find({});

@@ -2,7 +2,7 @@
 
 A modern, full-stack grocery delivery web application inspired by Blinkit, rebranded and enhanced for speed, convenience, and scalability.
 
-![Quicksy Banner](public/images/quicksy.jpg)
+![Quicksy Banner](public/images/quicksys.jpg)
 
 ## 🚀 Features
 - User authentication (local & Google OAuth)

@@ -13,7 +13,7 @@ router.get('/google',
 
 router.get('/google/callback',
     passport.authenticate('google',
-         {successRedirect: '/products',
+         {successRedirect: '/users/address',
           failureRedirect: '/',
         }),
         function (req, res) {}

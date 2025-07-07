@@ -186,8 +186,11 @@
                     <div class="flex justify-between items-center">
                         <div>
                             <p class="text-sm">Delivering to Home</p>
-                            <p class="text-xs text-gray-500">1st Floor M2, 132C Apex Builders Sector C Indrauri, saarthi...
-                            </p>
+                            <% if (typeof selectedAddress !== 'undefined' && selectedAddress && selectedAddress.address) { %>
+                              <p class="text-xs text-gray-700 font-mono"><%= selectedAddress.address %>, <%= selectedAddress.city %>, <%= selectedAddress.state %> - <%= selectedAddress.zip %></p>
+                            <% } else { %>
+                              <p class="text-xs text-gray-500">Set your location</p>
+                            <% } %>
                         </div>
                         <button class="text-blue-500">Change</button>
                     </div>
