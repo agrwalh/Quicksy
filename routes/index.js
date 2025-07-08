@@ -8,6 +8,7 @@ const { deliveryModel } = require('../models/delivery');
 
 router.get('/', async function (req, res) {
     try {
+        // Always fetch all products, ignore category filter
         const rnproducts = await productModel.find({});
         // Group products by category
         const products = {};
@@ -19,16 +20,18 @@ router.get('/', async function (req, res) {
         });
         let somethingInCart = false;
         let cartCount = 0;
+        let cart = [];
         if (req.isAuthenticated() && req.user) {
-            const cart = await cartModel.findOne({ user: req.user._id });
-            if (cart && cart.products.length > 0) {
+            const cartDoc = await cartModel.findOne({ user: req.user._id }).populate('products.product');
+            if (cartDoc && cartDoc.products.length > 0) {
                 somethingInCart = true;
-                cartCount = cart.products.length;
+                cartCount = cartDoc.products.length;
+                cart = cartDoc.products;
             }
         }
         // Fetch all categories for the navbar
         const categories = await categoryModel.find({});
-        res.render("index", { rnproducts, products, somethingInCart, cartCount, categories, user: req.user, selectedAddress: req.session.selectedAddress });
+        res.render("index", { rnproducts, products, somethingInCart, cartCount, categories, user: req.user, selectedAddress: req.session.selectedAddress, cart });
     } catch (err) {
         console.error('Index route error:', err);
         res.status(500).send('Error fetching products');
@@ -109,12 +112,18 @@ router.get('/order/:userid/:orderid/:paymentid/:signature', async (req, res) => 
 
 router.get('/map/:orderid', async (req, res) => {
     const { orderid } = req.params;
-    // Find the order by orderId
-    const order = await orderModel.findOne({ orderId: orderid });
+    // Find the order by orderId and populate products
+    const order = await orderModel.findOne({ orderId: orderid }).populate('products');
     // Find the delivery info for this order
     let delivery = null;
     if (order) {
         delivery = await deliveryModel.findOne({ order: order._id });
+    }
+    // Prepare orderProducts for summary (with product details)
+    let orderProducts = [];
+    if (order && order.products && order.products.length > 0) {
+        // If you have quantity info, adjust this structure accordingly
+        orderProducts = order.products.map(prod => ({ product: prod, quantity: 1 }));
     }
     // Pass status, estimated time, and order address (for EJS logic)
     res.render('map', {
@@ -122,7 +131,8 @@ router.get('/map/:orderid', async (req, res) => {
         orderStatus: order ? order.status : 'N/A',
         estimatedDeliveryTime: delivery ? delivery.estimatedDeliveryTime : null,
         orderAddress: order ? order.address : null,
-        selectedAddress: req.session.selectedAddress || null
+        selectedAddress: req.session.selectedAddress || null,
+        orderProducts
     });
 });
 

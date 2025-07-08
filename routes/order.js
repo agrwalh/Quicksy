@@ -3,6 +3,7 @@ const { paymentModel } = require('../models/payment');
 const { orderModel } = require('../models/order'); // Import this
 const { cartModel } = require('../models/cart');   // Import this
 const { deliveryModel } = require('../models/delivery');
+const { productModel } = require('../models/product');
 
 const router = express.Router();
 
@@ -143,12 +144,17 @@ router.get('/delivery/info/:orderid', async (req, res) => {
 
 router.get('/map/:orderid', async (req, res) => {
     const { orderid } = req.params;
-    // Find the order by orderId
-    const order = await orderModel.findOne({ orderId: orderid });
+    // Find the order by orderId and populate products
+    const order = await orderModel.findOne({ orderId: orderid }).populate('products');
     // Find the delivery info for this order
     let delivery = null;
     if (order) {
         delivery = await deliveryModel.findOne({ order: order._id });
+    }
+    // Prepare orderProducts for summary (with product details)
+    let orderProducts = [];
+    if (order && order.products && order.products.length > 0) {
+        orderProducts = order.products.map(prod => ({ product: prod, quantity: 1 }));
     }
     // Pass status, estimated time, and order address (for EJS logic)
     res.render('map', {
@@ -156,7 +162,8 @@ router.get('/map/:orderid', async (req, res) => {
         orderStatus: order ? order.status : 'N/A',
         estimatedDeliveryTime: delivery ? delivery.estimatedDeliveryTime : null,
         orderAddress: order ? order.address : null,
-        selectedAddress: req.session.selectedAddress || null
+        selectedAddress: req.session.selectedAddress || null,
+        orderProducts
     });
 });
 

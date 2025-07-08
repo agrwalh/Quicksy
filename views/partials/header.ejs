@@ -46,7 +46,7 @@
                 <% } else { %>
                     <a href="/login" class="text-gray-700 hover:text-green-700 font-medium">Login</a>
                 <% } %>
-                <a href="/cart" class="relative flex items-center">
+                <a href="/cart" id="headerCartBtn" class="relative flex items-center">
                     <i class="ri-shopping-cart-2-line text-2xl text-gray-700"></i>
                     <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
                         <span class="absolute -top-2 -right-2 bg-yellow-400 text-xs font-bold rounded-full px-2 py-0.5 text-green-900">

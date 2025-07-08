@@ -4,98 +4,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leaflet Route Map with OSM Geocoding and Real-Time Location</title>
+    <title>Order Tracking</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        #map {
-            height: 500px;
-            width: 100%;
-        }
-
-        #inputs {
-            margin: 20px 0;
-        }
-
-        .autocomplete-suggestions {
-            border: 1px solid #ddd;
-            max-height: 150px;
-            overflow-y: auto;
-            background-color: white;
-        }
-
-        .autocomplete-suggestion {
-            padding: 8px;
-            cursor: pointer;
-        }
-
-        .autocomplete-suggestion:hover {
-            background-color: #f0f0f0;
-        }
-
-        .leaflet-top+.leaflet-right {
-            display: none;
-        }
-
-        body { background: #f7fafc; font-family: 'Inter', 'Segoe UI', Arial, sans-serif; }
+        #map { height: 300px; width: 100%; border-radius: 1rem; margin-top: 1rem; }
     </style>
 </head>
 
-<body>
-    <div class="flex justify-center mt-8">
-        <div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg flex flex-col items-center border border-gray-100">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide
-                    <% if (orderStatus === 'confirmed') { %> bg-green-100 text-green-700 <% } else if (orderStatus === 'pending') { %> bg-yellow-100 text-yellow-700 <% } else { %> bg-gray-200 text-gray-700 <% } %>">
-                    <%= orderStatus.charAt(0).toUpperCase() + orderStatus.slice(1) %>
-                </span>
-                <span class="text-gray-400 text-xs">Order ID: <span class="font-mono"><%= orderid %></span></span>
-            </div>
-            <h2 class="text-2xl font-extrabold text-gray-800 mb-2 tracking-tight">Order Status</h2>
-            <div class="flex items-center gap-2 mb-2">
-                <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                <span class="text-lg font-semibold text-green-700">Confirmed</span>
-            </div>
-            <div class="flex flex-col items-center mb-4">
-                <span class="text-gray-500 text-sm">Estimated delivery</span>
-                <span class="text-3xl font-bold text-green-700 mt-1">
-                    <% if (estimatedDeliveryTime) { %>
-                        <%= estimatedDeliveryTime %> <span class="text-lg font-medium">minutes</span>
+<body class="bg-gray-50 min-h-screen font-sans">
+    <div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-xl border border-gray-100">
+        <!-- Order Status & Info -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <div>
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold tracking-wide
+                        <% if (orderStatus === 'confirmed') { %> bg-green-100 text-green-700 <% } else if (orderStatus === 'pending') { %> bg-yellow-100 text-yellow-700 <% } else { %> bg-gray-200 text-gray-700 <% } %>">
+                        <%= orderStatus.charAt(0).toUpperCase() + orderStatus.slice(1) %>
+                    </span>
+                    <span class="text-gray-400 text-xs">Order ID: <span class="font-mono"><%= orderid %></span></span>
+                </div>
+                <h2 class="text-xl font-extrabold text-gray-800 mb-1 tracking-tight">Order Status</h2>
+                <div class="flex items-center gap-2 mb-1">
+                    <% if (orderStatus === 'confirmed') { %>
+                        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        <span class="text-lg font-semibold text-green-700">Confirmed</span>
                     <% } else { %>
-                        Updating...
+                        <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="white"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3" stroke="currentColor" stroke-width="2"/></svg>
+                        <span class="text-lg font-semibold text-yellow-700">Pending</span>
                     <% } %>
-                </span>
-            </div>
-            <div class="w-full flex flex-col items-center mb-4">
-                <span class="text-gray-500 text-sm">Destination</span>
-                <span class="font-semibold text-gray-800 text-lg mt-1">
-                    <% if (orderAddress && orderAddress !== 'N/A') { %>
-                        <%= orderAddress %>
-                    <% } else { %>
-                        Not set
-                    <% } %>
-                </span>
+                </div>
+                <div class="flex flex-col mb-2">
+                    <span class="text-gray-500 text-sm">Estimated delivery</span>
+                    <span class="text-2xl font-bold text-green-700 mt-1">
+                        <% if (estimatedDeliveryTime) { %>
+                            <%= estimatedDeliveryTime %> <span class="text-lg font-medium">minutes</span>
+                        <% } else { %>
+                            Updating...
+                        <% } %>
+                    </span>
+                </div>
+                <div class="flex flex-col mb-2">
+                    <span class="text-gray-500 text-sm">Delivery Address</span>
+                    <span class="font-semibold text-gray-800 text-base mt-1">
+                        <% if (orderAddress && orderAddress !== 'N/A') { %>
+                            <%= orderAddress %>
+                        <% } else { %>
+                            Not set
+                        <% } %>
+                    </span>
+                </div>
             </div>
             <!-- Progress bar -->
-            <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
-                <div id="progress-bar" class="bg-green-500 h-3 rounded-full transition-all duration-500" style="width: 20%"></div>
+            <div class="w-full md:w-1/3 mt-4 md:mt-0">
+                <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+                    <div id="progress-bar" class="bg-green-500 h-3 rounded-full transition-all duration-500" style="width: 20%"></div>
+                </div>
+                <span id="progress-label" class="text-xs text-gray-500">Preparing your order...</span>
             </div>
-            <span id="progress-label" class="text-xs text-gray-500">Preparing your order...</span>
         </div>
-    </div>
 
-    <% if (!orderAddress || orderAddress === 'N/A') { %>
-    <div id="inputs">
-        <form method="post" action="/order/address/<%= orderid %>">
-            <label for="end">Destination:</label>
-            <input type="text" name="address" id="end" placeholder="Enter destination" value="<%= selectedAddress && selectedAddress.address ? (selectedAddress.address + ', ' + selectedAddress.city + ', ' + selectedAddress.state + ' - ' + selectedAddress.zip) : '' %>">
-            <div id="suggestions" class="autocomplete-suggestions"></div>
-            <input type="submit" value="Save Address">
-        </form>
+        <!-- Order Summary -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold mb-2 text-gray-700">Order Summary</h3>
+            <% if (typeof orderProducts !== 'undefined' && orderProducts.length > 0) { %>
+                <ul>
+                    <% orderProducts.forEach(function(item) { %>
+                        <li class="flex items-center mb-2">
+                            <% if (item.product && item.product.image) { %>
+                                <img src="data:image/jpg;base64, <%= item.product.image.toString('base64') %>" alt="<%= item.product.name %>" class="w-12 h-12 rounded mr-3">
+                            <% } else { %>
+                                <img src="/images/quicksy.jpg" alt="Product" class="w-12 h-12 rounded mr-3">
+                            <% } %>
+                            <div class="flex-1">
+                                <span class="font-medium text-gray-800"><%= item.product ? item.product.name : 'Product' %></span>
+                                <span class="text-xs text-gray-500 ml-2">x<%= item.quantity %></span>
+                            </div>
+                            <span class="text-green-700 font-semibold">₹<%= Number(item.product.price) * Number(item.quantity) %></span>
+                        </li>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <div class="text-gray-400">No products found for this order.</div>
+            <% } %>
+        </div>
+
+        <!-- Map or Address Input Section -->
+        <% if (!orderAddress || orderAddress === 'N/A') { %>
+            <div class="mt-8">
+                <h3 class="text-lg font-bold mb-2 text-gray-700">Set Delivery Address</h3>
+                <form method="post" action="/order/address/<%= orderid %>" class="flex flex-col gap-3 bg-gray-50 p-4 rounded-xl shadow">
+                    <label for="end" class="text-sm font-medium text-gray-700">Destination Address:</label>
+                    <input type="text" name="address" id="end" placeholder="Enter destination" value="<%= selectedAddress && selectedAddress.address ? (selectedAddress.address + ', ' + selectedAddress.city + ', ' + selectedAddress.state + ' - ' + selectedAddress.zip) : '' %>" class="px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-green-400">
+                    <button type="submit" class="bg-green-700 text-white px-6 py-2 rounded-lg hover:bg-green-800 mt-2">Save Address</button>
+                </form>
+            </div>
+        <% } else { %>
+            <div class="mt-8">
+                <h3 class="text-lg font-bold mb-2 text-gray-700">Delivery Route</h3>
+                <div id="map"></div>
+            </div>
+        <% } %>
     </div>
-    <% } else { %>
-    <div id="map"></div>
-    <% } %>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
@@ -328,6 +339,71 @@
         updateProgressBar(<%= estimatedDeliveryTime %>);
         <% } %>
     </script>
+
+    <% if (orderAddress && orderAddress !== 'N/A') { %>
+    <script>
+        let deliveryBoyMarker = null;
+        let map, routeControl;
+        // Initialize the map
+        document.addEventListener('DOMContentLoaded', function() {
+            map = L.map('map').setView([28.6139, 77.2090], 12); // Default to Delhi
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+            }).addTo(map);
+            // Fetch and update delivery boy location every 5 seconds
+            async function updateDeliveryBoyLocation() {
+                try {
+                    const res = await fetch(`/order/delivery/location/<%= orderid %>`);
+                    const data = await res.json();
+                    if (data.location && data.location.lat && data.location.lng) {
+                        const latlng = [data.location.lat, data.location.lng];
+                        if (!deliveryBoyMarker) {
+                            deliveryBoyMarker = L.marker(latlng, {
+                                icon: L.icon({
+                                    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+                                    iconSize: [32, 32],
+                                    iconAnchor: [16, 32],
+                                    popupAnchor: [0, -32]
+                                })
+                            }).addTo(map).bindPopup('Delivery Boy');
+                        } else {
+                            deliveryBoyMarker.setLatLng(latlng);
+                        }
+                        // Center map on delivery boy
+                        map.setView(latlng, 13);
+                        // Draw route to destination
+                        if (typeof routeControl === 'undefined' || !routeControl) {
+                            routeControl = L.Routing.control({
+                                waypoints: [
+                                    L.latLng(latlng[0], latlng[1]),
+                                    null // Will be set after geocoding address
+                                ],
+                                routeWhileDragging: false,
+                                draggableWaypoints: false,
+                                addWaypoints: false,
+                                show: false
+                            }).addTo(map);
+                            // Geocode the address to get destination coordinates
+                            L.Control.Geocoder.nominatim().geocode(`<%= orderAddress %>`, function(results) {
+                                if (results && results.length > 0) {
+                                    const destLatLng = results[0].center;
+                                    routeControl.setWaypoints([
+                                        L.latLng(latlng[0], latlng[1]),
+                                        L.latLng(destLatLng.lat, destLatLng.lng)
+                                    ]);
+                                }
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error fetching delivery boy location:', err);
+                }
+            }
+            updateDeliveryBoyLocation();
+            setInterval(updateDeliveryBoyLocation, 5000);
+        });
+    </script>
+    <% } %>
 
 </body>
 

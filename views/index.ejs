@@ -27,19 +27,19 @@
                 <div class="bg-cyan-500 rounded-xl p-6 flex flex-col items-start shadow text-white">
                     <div class="font-bold text-lg mb-2">Pharmacy at your doorstep!</div>
                     <div class="mb-4">Cough syrups, pain relief sprays & more</div>
-                    <img src="/images/promo-pharmacy.png" alt="Pharmacy" class="h-16 mb-4 rounded">
+                    <img src="/images/promo-pharmacy.jpg" alt="Pharmacy" class="w-full h-32 object-cover rounded-xl mb-4">
                     <a href="#" class="bg-white text-cyan-600 font-semibold px-4 py-2 rounded shadow hover:bg-cyan-100">Order Now</a>
                 </div>
                 <div class="bg-yellow-400 rounded-xl p-6 flex flex-col items-start shadow text-yellow-900">
                     <div class="font-bold text-lg mb-2">Pet Care supplies in minutes</div>
                     <div class="mb-4">Food, treats, toys & more</div>
-                    <img src="/images/promo-petcare.png" alt="Pet Care" class="h-16 mb-4 rounded">
+                    <img src="/images/promo-petcare.jpg" alt="Pet Care" class="w-full h-32 object-cover rounded-xl mb-4">
                     <a href="#" class="bg-white text-yellow-700 font-semibold px-4 py-2 rounded shadow hover:bg-yellow-100">Order Now</a>
                 </div>
                 <div class="bg-blue-100 rounded-xl p-6 flex flex-col items-start shadow text-blue-900">
                     <div class="font-bold text-lg mb-2">No time for a diaper run?</div>
                     <div class="mb-4">Get baby care essentials in minutes</div>
-                    <img src="/images/promo-babycare.png" alt="Baby Care" class="h-16 mb-4 rounded">
+                    <img src="/images/promo-babycare.jpg" alt="Baby Care" class="w-full h-32 object-cover rounded-xl mb-4">
                     <a href="#" class="bg-white text-blue-700 font-semibold px-4 py-2 rounded shadow hover:bg-blue-200">Order Now</a>
                 </div>
             </div>
@@ -132,15 +132,43 @@
 
             <% if(somethingInCart){ %>
                 <div class="py-20"></div>
-                <!-- Floating Cart Button -->
-                <div class="fixed bottom-6 right-6 z-50">
-                    <a href="/cart" class="flex items-center px-6 py-3 bg-green-700 text-white rounded-full shadow-lg hover:bg-green-800 transition">
-                        <span class="font-semibold mr-2"><%= cartCount %> Item<%= cartCount > 1 ? 's' : '' %></span>
-                        <span class="text-lg">Go to Cart</span>
-                        <i class="ri-arrow-right-s-fill text-2xl ml-2"></i>
-                    </a>
-                </div>
             <% } %>
+            <!-- Cart Drawer Modal (only, no floating button) -->
+            <div id="cartDrawer" class="fixed inset-0 bg-black bg-opacity-40 z-50 hidden">
+                <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-lg p-6 overflow-y-auto transition-transform transform translate-x-full" id="cartPanel">
+                    <button id="closeCartBtn" class="absolute top-4 right-4 text-2xl">&times;</button>
+                    <h2 class="text-xl font-bold mb-4">My Cart</h2>
+                    <% if (typeof cart !== 'undefined' && cart.length > 0) { %>
+                        <% cart.forEach(elem => { %>
+                            <% if (elem.product && typeof elem.product === 'object' && elem.product.name) { %>
+                                <div class="flex items-center mt-4">
+                                    <img src="<% if (elem.product.image && typeof elem.product.image.toString === 'function') { %>data:image/jpg;base64, <%= elem.product.image.toString('base64') %><% } else { %>/images/quicksy.jpg<% } %>" alt="<%= elem.product ? elem.product.name : '' %>" class="w-16 h-16 rounded">
+                                    <div class="ml-4">
+                                        <p><%= elem.product.name %></p>
+                                    </div>
+                                    <div class="ml-auto">
+                                        <div class="flex items-center justify-center bg-green-700 text-white rounded-md">
+                                            <a href="/cart/remove/<%= elem.product._id %>" class="px-2 py-1 rounded"><i class="ri-subtract-line"></i></a>
+                                            <p class="mx-2"><%= elem.quantity %></p>
+                                            <a href="/cart/add/<%= elem.product._id %>" class="px-2 py-1 rounded"><i class="ri-add-line"></i></a>
+                                        </div>
+                                        <div class="flex gap-2 mt-4">
+                                            <p class="text-gray-500 line-through">₹<%= Number(elem.product.price)*Number(elem.quantity)+20 %></p>
+                                            <p>₹<%= Number(elem.product.price)*Number(elem.quantity)%></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+                        <% }) %>
+                        <div class="mt-6 flex flex-col gap-2">
+                            <a href="/cart" class="bg-green-700 text-white px-6 py-2 rounded-lg hover:bg-green-800 text-center">Proceed to Pay</a>
+                            <button id="continueShoppingBtn" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 text-center">Continue Shopping</button>
+                        </div>
+                    <% } else { %>
+                        <div class="text-gray-500">Your cart is empty.</div>
+                    <% } %>
+                </div>
+            </div>
         </div>
 
         <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
@@ -177,6 +205,48 @@
                     window.scrollTo(0, scrollPosition);
                 }
             });
+        </script>
+        <script>
+            const openCartBtn = document.getElementById('openCartBtn');
+            const headerCartBtn = document.getElementById('headerCartBtn');
+            const cartDrawer = document.getElementById('cartDrawer');
+            const cartPanel = document.getElementById('cartPanel');
+            const closeCartBtn = document.getElementById('closeCartBtn');
+            const continueShoppingBtn = document.getElementById('continueShoppingBtn');
+
+            if (openCartBtn) {
+                openCartBtn.addEventListener('click', () => {
+                    cartDrawer.classList.remove('hidden');
+                    cartPanel.classList.remove('translate-x-full');
+                });
+            }
+            if (headerCartBtn) {
+                headerCartBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    cartDrawer.classList.remove('hidden');
+                    cartPanel.classList.remove('translate-x-full');
+                });
+            }
+            if (closeCartBtn) {
+                closeCartBtn.addEventListener('click', () => {
+                    cartDrawer.classList.add('hidden');
+                    cartPanel.classList.add('translate-x-full');
+                });
+            }
+            if (cartDrawer) {
+                cartDrawer.addEventListener('click', (e) => {
+                    if (e.target === cartDrawer) {
+                        cartDrawer.classList.add('hidden');
+                        cartPanel.classList.add('translate-x-full');
+                    }
+                });
+            }
+            if (continueShoppingBtn) {
+                continueShoppingBtn.addEventListener('click', () => {
+                    cartDrawer.classList.add('hidden');
+                    cartPanel.classList.add('translate-x-full');
+                });
+            }
         </script>
     </body>
     <%- include('./partials/footer'); %>
