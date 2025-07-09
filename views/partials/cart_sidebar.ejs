@@ -1,0 +1,81 @@
+<aside class="cart-sidebar-overlay" id="cartSidebar">
+  <div class="cart-sidebar">
+    <!-- Header -->
+    <div class="cart-header">
+      <h2>My Cart</h2>
+      <button class="cart-close-btn" id="closeCartBtn">&times;</button>
+    </div>
+
+    <!-- Unavailable Item Section -->
+    <div class="cart-unavailable">
+      <div class="cart-unavailable-icon">
+        <span class="icon-alert">&#9888;</span>
+      </div>
+      <div>
+        <div class="cart-unavailable-title">Currently unavailable</div>
+        <div class="cart-unavailable-desc">Shipment of 1 item</div>
+      </div>
+    </div>
+    <div class="cart-item">
+      <img src="/public/images/dairy_bread_eggs.jpg" alt="Amul Taaza Toned Milk" class="cart-item-img">
+      <div class="cart-item-details">
+        <div class="cart-item-title">Amul Taaza Toned Milk</div>
+        <div class="cart-item-qty">500 ml</div>
+        <div class="cart-item-price">₹29</div>
+      </div>
+      <div class="cart-item-qty-controls">
+        <button class="qty-btn">-</button>
+        <span class="qty-value">1</span>
+        <button class="qty-btn">+</button>
+      </div>
+    </div>
+
+    <!-- Bill Details -->
+    <div class="cart-bill-details">
+      <div class="bill-row"><span>Items total</span><span>₹29</span></div>
+      <div class="bill-row"><span>Delivery charge <span class="info-icon">&#9432;</span></span><span>₹30</span></div>
+      <div class="bill-row"><span>Handling charge <span class="info-icon">&#9432;</span></span><span>₹9</span></div>
+      <div class="bill-row bill-grand-total"><span>Grand total</span><span>₹68</span></div>
+    </div>
+
+    <!-- Donation Section -->
+    <div class="cart-donation">
+      <div class="donation-icon"><span>&#127873;</span></div>
+      <div class="donation-details">
+        <div class="donation-title">Feeding India donation</div>
+        <div class="donation-desc">Working towards a malnutrition free India. Feeding India...<span class="donation-readmore">read more</span></div>
+      </div>
+      <div class="donation-checkbox">
+        <input type="checkbox" id="donationCheck"><label for="donationCheck">₹1</label>
+      </div>
+    </div>
+
+    <!-- Tip Section -->
+    <div class="cart-tip">
+      <div class="tip-title">Tip your delivery partner</div>
+      <div class="tip-desc">Your kindness means a lot! 100% of your tip will go directly to your delivery partner.</div>
+      <div class="tip-options">
+        <button class="tip-btn">😊 ₹20</button>
+        <button class="tip-btn">🥳 ₹30</button>
+        <button class="tip-btn">😍 ₹50</button>
+        <button class="tip-btn">👏 Custom</button>
+      </div>
+    </div>
+
+    <!-- Address Section -->
+    <div class="cart-address">
+      <div class="address-icon">📍</div>
+      <div class="address-details">
+        <div class="address-title">Delivering to Home</div>
+        <div class="address-desc">Floor Ground, Indraprastha Engineering College...</div>
+      </div>
+      <button class="address-change-btn">Change</button>
+    </div>
+
+    <!-- Footer -->
+    <div class="cart-footer">
+      <div class="cart-total">₹68 <span class="cart-total-label">TOTAL</span></div>
+      <button class="cart-pay-btn" disabled>Proceed To Pay &rarr;</button>
+    </div>
+  </div>
+</aside> 
