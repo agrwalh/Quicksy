@@ -42,5 +42,35 @@ if (donationCheck) {
   });
 }
 
+// Add to Cart AJAX logic
+function setupAddToCartButtons() {
+  document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const productId = this.getAttribute('data-product-id');
+      fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ productId })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          // Optionally update sidebar content here
+          openCartSidebar();
+        } else {
+          alert(data.error || 'Error adding to cart');
+        }
+      })
+      .catch(() => alert('Error adding to cart'));
+    });
+  });
+}
+// Run on page load
+window.addEventListener('DOMContentLoaded', setupAddToCartButtons);
+
 // Optionally, expose openCartSidebar for use elsewhere
 window.openCartSidebar = openCartSidebar; 

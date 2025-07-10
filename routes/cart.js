@@ -110,6 +110,46 @@ router.get("/add/:id", userIsLoggedIn, async (req, res) => {
     }
 });
 
+// Add product to cart via AJAX (POST, returns JSON)
+router.post("/add", userIsLoggedIn, async (req, res) => {
+    try {
+        const { productId } = req.body;
+        if (!productId) return res.status(400).json({ error: 'Missing productId' });
+        let cart = await cartModel.findOne({ user: req.session.passport.user });
+        const product = await productModel.findById(productId);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+        if (!cart) {
+            cart = await cartModel.create({
+                user: req.session.passport.user,
+                products: [{ product: productId, quantity: 1 }],
+                totalPrice: Number(product.price)
+            });
+        } else {
+            // Find if product already in cart
+            const prodIndex = cart.products.findIndex(p => p.product.toString() === productId);
+            if (prodIndex > -1) {
+                cart.products[prodIndex].quantity += 1;
+            } else {
+                cart.products.push({ product: productId, quantity: 1 });
+            }
+            // Recalculate total price
+            cart.totalPrice = 0;
+            for (const item of cart.products) {
+                const prod = await productModel.findById(item.product);
+                cart.totalPrice += Number(prod.price) * item.quantity;
+            }
+            await cart.save();
+        }
+        // Optionally, populate product details for response
+        await cart.populate('products.product');
+        res.json({ success: true, cart });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Remove product from cart (decrement quantity or remove)
 router.get("/remove/:id", userIsLoggedIn, async (req, res) => {
     try {

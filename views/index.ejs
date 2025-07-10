@@ -73,7 +73,7 @@
                             </p>
                             <p class="text-xs text-gray-400 line-through">₹<%= Number(elem.price)+20 %></p>
                             <p class="font-bold text-green-700">₹<%= elem.price %></p>
-                            <a class="bg-green-700 text-white px-4 py-1 rounded mt-2 hover:bg-green-800 transition" href="/cart/add/<%= elem._id %>">ADD</a>
+                            <button class="bg-green-700 text-white px-4 py-1 rounded mt-2 hover:bg-green-800 transition add-to-cart-btn" data-product-id="<%= elem._id %>">ADD</button>
                         </div>
                     <%}) %>
                 </div>
@@ -123,7 +123,7 @@
                                 <p class="text-sm text-center mt-2 font-medium">
                                     <%= elem.name %>
                                 </p>
-                                <a class="px-4 text-white text-xs rounded mt-2 inline-block py-1 bg-green-700 hover:bg-green-800 transition" href="/cart/add/<%= elem._id %>">ADD</a>
+                                <button class="px-4 text-white text-xs rounded mt-2 inline-block py-1 bg-green-700 hover:bg-green-800 transition add-to-cart-btn" data-product-id="<%= elem._id %>">ADD</button>
                             </div>
                         <%}) %>
                     </div>
