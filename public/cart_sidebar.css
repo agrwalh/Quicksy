@@ -33,6 +33,12 @@
   to { transform: translateX(0); }
 }
 
+#cartSidebarContent {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
 .cart-header {
   display: flex;
   justify-content: space-between;
@@ -256,13 +262,15 @@
 }
 
 .cart-footer {
-  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  z-index: 2;
   padding: 20px 24px;
   border-top: 1px solid #f0f0f0;
   display: flex;
   align-items: center;
   gap: 16px;
-  background: #fff;
 }
 .cart-total {
   font-size: 1.3rem;

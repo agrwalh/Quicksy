@@ -67,7 +67,27 @@ router.get("/", userIsLoggedIn, async (req, res) => {
 // GET cart data as JSON (for API calls)
 router.get("/data", userIsLoggedIn, async (req, res) => {
     try {
-        const cart = await cartModel.findOne({ user: req.session.passport.user }).populate('products');
+        const cart = await cartModel.findOne({ user: req.session.passport.user }).populate('products.product');
+        // Convert image Buffer to base64 string for each product (handle both Buffer and {data, contentType})
+        if (cart && cart.products) {
+            cart.products.forEach(item => {
+                if (item.product && item.product.image) {
+                    if (item.product.image.buffer) {
+                        item.product.image = item.product.image.toString('base64');
+                    } else if (item.product.image.data) {
+                        item.product.image = Buffer.from(item.product.image.data).toString('base64');
+                    } else {
+                        item.product.image = '';
+                    }
+                }
+            });
+            // Debug log for images
+            console.log(cart.products.map(p => ({
+                name: p.product.name,
+                imageType: typeof p.product.image,
+                imageLength: p.product.image ? p.product.image.length : 0
+            })));
+        }
         res.json(cart || { products: [], totalPrice: 0 });
     } catch (err) {
         res.status(500).json({ error: err.message });
