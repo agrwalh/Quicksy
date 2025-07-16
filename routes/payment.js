@@ -16,7 +16,7 @@ const razorpay = new Razorpay({
 // Route to create Razorpay Order
 router.post("/create/orderId", async (req, res) => {
     const options = {
-        amount: 5000 * 100, // amount in paise (₹5000)
+        amount: 5000 * 100, // amount in paiseyyyyyy (₹5000)
         currency: "INR",
     };
 
