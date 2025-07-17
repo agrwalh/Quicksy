@@ -13,6 +13,7 @@ const userRouter=require("./routes/user")
 const cartRouter=require("./routes/cart")
 const paymentRouter=require("./routes/payment")
 const orderRouter=require("./routes/order")
+const { categoryModel } = require('./models/category');
 
 require('dotenv').config();
 require('./config/db');
@@ -34,6 +35,17 @@ app.use(cookieParser())
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Middleware to make categories available in all views
+app.use(async (req, res, next) => {
+    try {
+        const categories = await categoryModel.find({});
+        res.locals.categories = categories;
+    } catch (err) {
+        res.locals.categories = [];
+    }
+    next();
+});
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);

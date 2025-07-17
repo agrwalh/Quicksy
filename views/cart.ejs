@@ -217,7 +217,9 @@
                 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
             <script>
                 document.querySelector('.paybtn').onclick = function (e) {
-                    axios.post('/payment/create/orderId')
+                    axios.post('/payment/create/orderId', {
+                        userId: "<%= userid %>"
+                    })
                         .then(function (response) {
                             var options = {
                                 "key": "rzp_test_CILoD5f39Ac7UB", // Enter the Key ID generated from the Dashboard

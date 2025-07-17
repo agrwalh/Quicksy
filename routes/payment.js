@@ -15,21 +15,30 @@ const razorpay = new Razorpay({
 
 // Route to create Razorpay Order
 router.post("/create/orderId", async (req, res) => {
-    const options = {
-        amount: 5000 * 100, // amount in paiseyyyyyy (₹5000)
-        currency: "INR",
-    };
-
+    const userId = req.body.userId;
+    if (!userId) {
+        return res.status(400).json({ error: "Missing userId" });
+    }
     try {
+        const cart = await cartModel.findOne({ user: userId });
+        if (!cart || !cart.products || cart.products.length === 0) {
+            return res.status(400).json({ error: "Cart is empty" });
+        }
+        // Add delivery and handling charges (30 + 4)
+        const delivery = 30;
+        const handling = 4;
+        const totalAmount = cart.totalPrice + delivery + handling;
+        const options = {
+            amount: totalAmount * 100, // amount in paisa
+            currency: "INR",
+        };
         const order = await razorpay.orders.create(options);
-
         await paymentModel.create({
             orderId: order.id,
             amount: order.amount,
             currency: order.currency,
             status: "pending",
         });
-
         res.status(200).json(order);
     } catch (error) {
         console.error("Error creating Razorpay order:", error);
