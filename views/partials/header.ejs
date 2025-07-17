@@ -1,42 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quicksy</title>
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body, html { font-family: 'Inter', sans-serif; }
+      .glass {
+        background: rgba(255,255,255,0.7);
+        box-shadow: 0 4px 24px 0 rgba(0,0,0,0.04);
+        backdrop-filter: blur(8px);
+      }
+      .header-gradient {
+        background: linear-gradient(90deg, #e0ffe7 0%, #fffbe6 100%);
+      }
+      .nav-gradient {
+        background: linear-gradient(90deg, #22c55e 0%, #facc15 100%);
+      }
+      .nav-link {
+        border-radius: 9999px;
+        padding: 0.25rem 1rem;
+        transition: background 0.2s, color 0.2s;
+      }
+      .nav-link:hover {
+        background: rgba(255,255,255,0.2);
+        color: #fffbe6;
+      }
+      .search-glass {
+        background: rgba(255,255,255,0.8);
+        border: 1.5px solid #e5e7eb;
+        box-shadow: 0 2px 12px 0 rgba(34,197,94,0.08);
+        backdrop-filter: blur(6px);
+      }
+      .user-dropdown {
+        border-radius: 1rem;
+        box-shadow: 0 4px 24px 0 rgba(34,197,94,0.08);
+      }
+    </style>
 </head>
-
 <body class="bg-gray-50 min-h-screen">
-    <header class="sticky top-0 z-50 bg-white shadow flex flex-col">
-        <div class="flex items-center justify-between px-6 py-3">
-            <div class="flex items-center space-x-2">
-                <img src="/images/quicksy.jpg" alt="Quicksy Logo" class="h-8 w-8 rounded-full">
-                <span class="text-2xl font-bold"><span class="text-green-700">Quick</span><span class="text-orange-500">sy</span></span>
+    <header class="sticky top-0 z-50 header-gradient shadow flex flex-col">
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4">
+            <div class="flex items-center space-x-3 mb-2 md:mb-0">
+                <img src="/images/quicksy.jpg" alt="Quicksy Logo" class="h-12 w-12 rounded-full shadow border-2 border-green-400">
+                <span class="text-3xl font-extrabold tracking-tight"><span class="text-green-700">Quick</span><span class="text-orange-500">sy</span></span>
             </div>
-            <div class="hidden md:flex flex-col items-center flex-1">
-                <span class="text-xs text-gray-500">Delivery in <span class="font-semibold text-black">8 minutes</span></span>
-                <% if (typeof selectedAddress !== 'undefined' && selectedAddress && selectedAddress.address) { %>
-                  <span class="text-sm font-medium"><%= selectedAddress.address %>, <%= selectedAddress.city %>, <%= selectedAddress.state %> - <%= selectedAddress.zip %></span>
-                <% } else { %>
-                  <span class="text-sm font-medium text-gray-400">Set your location</span>
-                <% } %>
-            </div>
-            <form action="/search" method="get" class="flex-1 flex justify-center">
-                <input type="text" name="q" placeholder="Search 'sugar'" class="w-full max-w-lg px-6 py-2 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400 text-lg shadow-sm">
+            <form action="/search" method="get" class="flex-1 flex justify-center w-full md:w-auto mb-2 md:mb-0 md:mx-8">
+                <input type="text" name="q" placeholder="Search for products, brands..." class="search-glass w-full max-w-lg px-6 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-green-400 text-lg shadow-sm transition">
             </form>
-            <div class="flex items-center space-x-4 ml-4">
+            <div class="flex items-center space-x-4 ml-0 md:ml-4">
                 <% if (user && (user.name || user.email)) { %>
                     <div class="relative group">
-                        <button class="text-gray-700 hover:text-green-700 font-medium flex items-center focus:outline-none">
-                            <i class="ri-user-3-line mr-1"></i>
-                            <%= user.name ? user.name : user.email %>
+                        <button class="text-gray-700 hover:text-green-700 font-semibold flex items-center focus:outline-none">
+                            <i class="ri-user-3-line mr-1 text-xl"></i>
+                            <span class="hidden sm:inline"><%= user.name ? user.name : user.email %></span>
                             <i class="ri-arrow-down-s-line ml-1"></i>
                         </button>
-                        <div class="absolute right-0 mt-2 w-40 bg-white text-green-700 rounded shadow-lg opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto z-50">
+                        <div class="absolute right-0 mt-2 w-44 bg-white text-green-700 user-dropdown shadow-lg opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto z-50">
                             <a href="/profile" class="block px-4 py-2 hover:bg-green-100">Profile</a>
                             <form action="/auth/logout" method="post">
                                 <button type="submit" class="w-full text-left px-4 py-2 hover:bg-green-100">Logout</button>
@@ -44,26 +68,24 @@
                         </div>
                     </div>
                 <% } else { %>
-                    <a href="/login" class="text-gray-700 hover:text-green-700 font-medium">Login</a>
+                    <a href="/login" class="text-gray-700 hover:text-green-700 font-semibold">Login</a>
                 <% } %>
                 <a href="/cart" id="headerCartBtn" class="relative flex items-center">
                     <i class="ri-shopping-cart-2-line text-2xl text-gray-700"></i>
                     <% if (typeof cartCount !== 'undefined' && cartCount > 0) { %>
-                        <span class="absolute -top-2 -right-2 bg-yellow-400 text-xs font-bold rounded-full px-2 py-0.5 text-green-900">
-                            <%= cartCount %>
-                        </span>
+                        <span class="absolute -top-2 -right-2 bg-yellow-400 text-xs font-bold rounded-full px-2 py-0.5 text-green-900 border border-white shadow"> <%= cartCount %> </span>
                     <% } %>
                 </a>
             </div>
         </div>
-        <nav class="flex justify-center space-x-8 bg-green-700 text-white py-2 text-lg font-medium relative">
-            <a href="/" class="hover:text-yellow-300 transition">Home</a>
+        <nav class="flex flex-wrap justify-center space-x-2 md:space-x-8 nav-gradient text-white py-2 text-lg font-semibold rounded-b-2xl shadow-md">
+            <a href="/" class="nav-link">Home</a>
             <div class="relative group">
-                <button class="hover:text-yellow-300 transition focus:outline-none">Categories <i class="ri-arrow-down-s-line"></i></button>
-                <div class="absolute left-0 mt-2 w-48 bg-white text-green-700 rounded shadow-lg opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto z-50">
+                <button class="nav-link flex items-center">Categories <i class="ri-arrow-down-s-line ml-1"></i></button>
+                <div class="absolute left-0 mt-2 w-48 bg-white text-green-700 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto z-50">
                     <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
                         <% categories.forEach(function(cat) { %>
-                            <a href="/?category=<%= cat.name %>" class="block px-4 py-2 hover:bg-green-100"><%= cat.name %></a>
+                            <a href="/?category=<%= cat.name %>" class="block px-4 py-2 hover:bg-green-100"> <%= cat.name %> </a>
                         <% }) %>
                     <% } else { %>
                         <span class="block px-4 py-2 text-gray-400">No categories</span>
@@ -71,14 +93,14 @@
                 </div>
             </div>
             <div class="relative group">
-                <button class="hover:text-yellow-300 transition focus:outline-none">Offers <i class="ri-arrow-down-s-line"></i></button>
-                <div class="absolute left-0 mt-2 w-56 bg-white text-green-700 rounded shadow-lg opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto z-50">
+                <button class="nav-link flex items-center">Offers <i class="ri-arrow-down-s-line ml-1"></i></button>
+                <div class="absolute left-0 mt-2 w-56 bg-white text-green-700 rounded-xl shadow-lg opacity-0 group-hover:opacity-100 transition pointer-events-none group-hover:pointer-events-auto z-50">
                     <a href="#" class="block px-4 py-2 hover:bg-green-100">10% off on first order</a>
                     <a href="#" class="block px-4 py-2 hover:bg-green-100">Free delivery above ₹500</a>
                     <a href="#" class="block px-4 py-2 hover:bg-green-100">Buy 1 Get 1 Free (selected items)</a>
                 </div>
             </div>
-            <a href="/admin/login" class="hover:text-yellow-300 transition">Admin</a>
+            <a href="/admin/login" class="nav-link">Admin</a>
         </nav>
     </header>
 </body>

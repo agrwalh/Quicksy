@@ -24,10 +24,12 @@ const productSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    
   },
-  image: {
+  images: [{
     type: Buffer,
+  }],
+  image: {
+    type: Buffer, // for backward compatibility
   },
 }, {
   timestamps: true
@@ -40,13 +42,13 @@ const Product = mongoose.model('Product', productSchema);
 function validateProduct(data) {
   const schema = Joi.object({
     name: Joi.string().min(3).max(100).required(),
-    price: Joi.number().min(0).required(), // If you plan to do calculations, change this to number
+    price: Joi.number().min(0).required(),
     category: Joi.string().min(3).max(50).required(),
     stock: Joi.number().required(),
     description: Joi.string().optional(),
+    images: Joi.array().items(Joi.string()).optional(),
     image: Joi.string().optional(),
   });
-
   return schema.validate(data);
 }
 

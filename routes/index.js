@@ -8,16 +8,23 @@ const { deliveryModel } = require('../models/delivery');
 
 router.get('/', async function (req, res) {
     try {
-        // Always fetch all products, ignore category filter
-        const rnproducts = await productModel.find({});
-        // Group products by category
-        const products = {};
-        rnproducts.forEach(product => {
-            if (!products[product.category]) {
-                products[product.category] = [];
+        // Always fetch all products for the home page
+        const allProducts = await productModel.find({});
+        // Group all products by category
+        const allGrouped = {};
+        allProducts.forEach(product => {
+            if (!allGrouped[product.category]) {
+                allGrouped[product.category] = [];
             }
-            products[product.category].push(product);
+            allGrouped[product.category].push(product);
         });
+        // If a category is selected, filter for that category as well
+        let filteredProducts = [];
+        let selectedCategory = null;
+        if (req.query.category) {
+            filteredProducts = allProducts.filter(p => p.category === req.query.category);
+            selectedCategory = req.query.category;
+        }
         let somethingInCart = false;
         let cartCount = 0;
         let cart = [];
@@ -31,7 +38,18 @@ router.get('/', async function (req, res) {
         }
         // Fetch all categories for the navbar
         const categories = await categoryModel.find({});
-        res.render("index", { rnproducts, products, somethingInCart, cartCount, categories, user: req.user, selectedAddress: req.session.selectedAddress, cart });
+        res.render("index", {
+            allProducts,
+            allGrouped,
+            filteredProducts,
+            selectedCategory,
+            somethingInCart,
+            cartCount,
+            categories,
+            user: req.user,
+            selectedAddress: req.session.selectedAddress,
+            cart
+        });
     } catch (err) {
         console.error('Index route error:', err);
         res.status(500).send('Error fetching products');
